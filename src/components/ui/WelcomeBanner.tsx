@@ -37,9 +37,9 @@ export default function WelcomeBanner() {
       >
         &times;
       </button>
-      <h4 className="[font-family:var(--serif)] text-[clamp(1rem,1.4vw,1.15rem)] font-light tracking-wider" id="wbT">
+      <p className="[font-family:var(--serif)] text-[clamp(1rem,1.4vw,1.15rem)] font-light tracking-wider" id="wbT">
         {title}
-      </h4>
+      </p>
       <p className="text-[clamp(.78rem,.95vw,.85rem)] text-[var(--fg2)] leading-relaxed mt-1.5" id="wbP">
         {text}
       </p>

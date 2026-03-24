@@ -15,19 +15,19 @@ export default function ReservationSection() {
             預約訂位
           </h2>
           <div className="info-detail rv rv-d2">
-            <h4>Address</h4>
+            <h3>Address</h3>
             <p>{RESTAURANT.address}</p>
           </div>
           <div className="info-detail rv rv-d2">
-            <h4>Lunch</h4>
+            <h3>Lunch</h3>
             <p>{RESTAURANT.hours.lunch.days} {RESTAURANT.hours.lunch.time}</p>
           </div>
           <div className="info-detail rv rv-d3">
-            <h4>Dinner</h4>
+            <h3>Dinner</h3>
             <p>{RESTAURANT.hours.dinner.days} {RESTAURANT.hours.dinner.time}</p>
           </div>
           <div className="info-detail rv rv-d3">
-            <h4>Closed</h4>
+            <h3>Closed</h3>
             <p>{RESTAURANT.hours.closed}</p>
           </div>
           <a

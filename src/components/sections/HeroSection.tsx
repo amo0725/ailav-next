@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { HERO_MAIN_IMAGE, HERO_SCATTER_IMAGES } from '@/lib/constants';
 
@@ -45,7 +46,14 @@ export default function HeroSection() {
     const giEls = heroPin.querySelectorAll('[data-gi]');
     let vw = window.innerWidth;
     let vh = window.innerHeight;
-    const onResize = () => { vw = window.innerWidth; vh = window.innerHeight; };
+    let resizeRafId = 0;
+    const onResize = () => {
+      cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        vw = window.innerWidth;
+        vh = window.innerHeight;
+      });
+    };
     window.addEventListener('resize', onResize, { passive: true });
 
     // Track previous states to skip no-op DOM writes
@@ -95,7 +103,7 @@ export default function HeroSection() {
       });
     }, heroArea);
 
-    return () => { ctx.revert(); window.removeEventListener('resize', onResize); };
+    return () => { ctx.revert(); cancelAnimationFrame(resizeRafId); window.removeEventListener('resize', onResize); };
   }, []);
 
   return (
@@ -110,12 +118,13 @@ export default function HeroSection() {
           id="heroImg"
           ref={heroImgRef}
         >
-          <img
-            className="w-full h-full object-cover brightness-[.84] saturate-[.78]"
+          <Image
+            className="object-cover brightness-[.84] saturate-[.78]"
             src={HERO_MAIN_IMAGE}
             alt="AILAV 精緻料理擺盤 高雄餐廳"
-            loading="eager"
-            fetchPriority="high"
+            fill
+            priority
+            sizes="100vw"
           />
         </div>
         <div
@@ -150,11 +159,12 @@ export default function HeroSection() {
             className={`hero-gi ${img.className} absolute overflow-hidden z-[1] pointer-events-none shadow-[0_8px_30px_rgba(0,0,0,.08)] hidden md:block`}
             data-gi=""
           >
-            <img
-              className="w-full h-full object-cover saturate-[.68] brightness-[.95] [transform:scale(1.15)] transition-transform duration-[1.4s]"
+            <Image
+              className="object-cover saturate-[.68] brightness-[.95] [transform:scale(1.15)] transition-transform duration-[1.4s]"
               src={img.src}
               alt={img.alt}
-              loading="lazy"
+              fill
+              sizes="20vw"
             />
           </div>
         ))}

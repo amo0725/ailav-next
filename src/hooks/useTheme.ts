@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -12,22 +12,64 @@ interface UseThemeReturn {
 
 const STORAGE_KEY = 'ailav-theme';
 
-export function useTheme(): UseThemeReturn {
-  const [theme, setTheme] = useState<Theme>('light');
+let currentTheme: Theme = 'light';
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
+function notify() {
+  listeners.forEach((l) => l());
+}
+
+function getSnapshot(): Theme {
+  return currentTheme;
+}
+
+function getServerSnapshot(): Theme {
+  return 'light';
+}
+
+function subscribe(callback: () => void): () => void {
+  listeners.add(callback);
+
+  // Initialize on first subscribe (client-side only)
+  if (listeners.size === 1) {
     const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (saved === 'dark') setTheme('dark');
-  }, []);
+    if (saved === 'light' || saved === 'dark') {
+      currentTheme = saved;
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      currentTheme = 'dark';
+    }
+    document.documentElement.dataset.theme = currentTheme;
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    // Listen for system preference changes
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        currentTheme = e.matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = currentTheme;
+        notify();
+      }
+    };
+    mql.addEventListener('change', handler);
+  }
+
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+function applyTheme(next: Theme) {
+  currentTheme = next;
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem(STORAGE_KEY, next);
+  notify();
+}
+
+export function useTheme(): UseThemeReturn {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
+    applyTheme(theme === 'dark' ? 'light' : 'dark');
+  }, [theme]);
 
   return { theme, isDark: theme === 'dark', toggleTheme };
 }

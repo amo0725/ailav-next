@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function ConceptSection() {
   return (
     <section
@@ -21,12 +23,13 @@ export default function ConceptSection() {
             更是餐桌上的文化共鳴。
           </p>
         </div>
-        <div className="concept-img img-rv rv aspect-[3/4]">
-          <img
-            className="w-full h-full object-cover"
+        <div className="concept-img img-rv rv relative aspect-[3/4]">
+          <Image
+            className="object-cover"
             src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80&auto=format&fm=avif"
             alt="精選季節食材 高雄 AILAV"
-            loading="lazy"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
       </div>

@@ -22,7 +22,7 @@ export default function CustomCursor() {
     const loop = () => {
       cx += (tx - cx) * 0.12;
       cy += (ty - cy) * 0.12;
-      dot.style.transform = `translate(${cx}px, ${cy}px)`;
+      dot.style.transform = `translate(calc(${cx}px - 50%), calc(${cy}px - 50%))`;
 
       // Stop loop when cursor has converged (within 0.5px)
       if (Math.abs(tx - cx) > 0.5 || Math.abs(ty - cy) > 0.5) {

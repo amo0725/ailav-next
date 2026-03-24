@@ -27,21 +27,8 @@ export default function Header() {
   const toggleNav = useCallback((open?: boolean) => {
     setNavOpen((prev) => {
       const next = open ?? !prev;
-      if (next) {
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${window.scrollY}px`;
-      } else {
-        const scrollY = document.body.style.top;
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
+      document.body.style.overflow = next ? 'hidden' : '';
+      document.documentElement.style.overflow = next ? 'hidden' : '';
       return next;
     });
   }, []);
@@ -111,6 +98,9 @@ export default function Header() {
             className="h-[clamp(64px,8vw,80px)] w-auto"
             src="/images/logo.svg"
             alt="AILAV"
+            width={80}
+            height={80}
+            fetchPriority="high"
           />
         </a>
         <div className="hdr-right flex items-center gap-6 z-[101]">
@@ -154,6 +144,8 @@ export default function Header() {
               className="h-[clamp(64px,8vw,80px)] w-auto"
               src="/images/logo.svg"
               alt="AILAV"
+              width={80}
+              height={80}
               style={{ filter: isDark ? 'invert(1)' : 'none' }}
             />
           </a>

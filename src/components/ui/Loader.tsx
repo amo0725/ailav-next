@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
+import { LOADER_DURATION_MS, LOADER_FALLBACK_MS } from '@/lib/constants';
 
 interface LoaderProps {
   onDone?: () => void;
@@ -35,8 +36,8 @@ export default function Loader({ onDone }: LoaderProps) {
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    const timer = setTimeout(finish, 3200);
-    const fallback = setTimeout(() => { if (!doneRef.current) finish(); }, 6000);
+    const timer = setTimeout(finish, LOADER_DURATION_MS);
+    const fallback = setTimeout(() => { if (!doneRef.current) finish(); }, LOADER_FALLBACK_MS);
     return () => { clearTimeout(timer); clearTimeout(fallback); };
   }, [finish]);
 
