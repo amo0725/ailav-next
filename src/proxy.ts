@@ -13,7 +13,7 @@ export function proxy(_request: NextRequest) {
     "media-src 'self' assets.mixkit.co",
     "font-src 'self'",
     "connect-src 'self'",
-    "frame-src 'none'",
+    "frame-src 'self' https://www.google.com https://maps.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
