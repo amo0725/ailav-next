@@ -11,6 +11,8 @@ export default function Footer() {
           className="foot-logo w-[clamp(110px,16vw,160px)] h-auto opacity-70 transition-[opacity,filter] duration-400 hover:opacity-100"
           src="/images/logo.svg"
           alt="AILAV"
+          width={160}
+          height={60}
         />
         <p className="[font-family:var(--serif)] text-[.88rem] font-normal tracking-[.32em] uppercase text-[var(--fg2)] -mt-2">
           {SITE_TAGLINE}
@@ -35,7 +37,7 @@ export default function Footer() {
             </svg>
           </a>
         </div>
-        <div className="foot-copy text-[.68rem] text-[var(--fg3)] tracking-[.1em] opacity-50 flex gap-4 flex-wrap justify-center">
+        <div className="foot-copy text-[.68rem] text-[var(--fg3)] tracking-[.1em] flex gap-4 flex-wrap justify-center">
           <span>&copy; {new Date().getFullYear()} AILAV</span>
           <span>Privacy Policy</span>
         </div>

@@ -1,0 +1,20 @@
+{
+  "name": "AILAV — A Journey of Taste",
+  "short_name": "AILAV",
+  "description": "高雄精緻餐飲，融合亞洲風味的當代料理體驗。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b7355",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "lang": "zh-Hant",
+  "categories": ["food", "restaurants"]
+}

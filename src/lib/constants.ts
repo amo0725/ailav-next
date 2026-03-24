@@ -86,7 +86,7 @@ export const CHEFS = [
 
 /* ── Hero Images ── */
 export const HERO_MAIN_IMAGE =
-  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85&auto=format&fm=avif';
+  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format';
 
 export const HERO_SCATTER_IMAGES = [
   { src: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80&auto=format&fm=avif', alt: '精緻擺盤', className: 'gi-1' },

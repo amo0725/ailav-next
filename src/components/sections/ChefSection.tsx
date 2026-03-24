@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { CHEFS } from '@/lib/constants';
 
 export default function ChefSection() {
@@ -29,14 +30,15 @@ export default function ChefSection() {
               data-dof=""
             >
               <div
-                className="chef-img img-rv rv dof-focus aspect-[16/10] lg:aspect-[4/5] overflow-hidden"
+                className="chef-img img-rv rv dof-focus relative aspect-[16/10] lg:aspect-[4/5] overflow-hidden"
                 style={chef.flip ? { direction: 'ltr' } : undefined}
               >
-                <img
-                  className="w-full h-full object-cover saturate-[.75]"
+                <Image
+                  className="object-cover saturate-[.75]"
                   src={chef.image}
                   alt={`主廚 ${chef.name.split(' — ')[0]}`}
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 45vw"
                 />
               </div>
               <div className="dof-blur" style={chef.flip ? { direction: 'ltr' } : undefined}>

@@ -1,5 +1,32 @@
 import type { Metadata } from 'next';
+import { Cormorant_Garamond, Inter } from 'next/font/google';
+import localFont from 'next/font/local';
+import Script from 'next/script';
 import './globals.css';
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-cormorant',
+});
+
+const notoSerifTC = localFont({
+  src: [
+    { path: '../fonts/NotoSerifTC-Light-subset.woff2', weight: '300', style: 'normal' },
+    { path: '../fonts/NotoSerifTC-Regular-subset.woff2', weight: '400', style: 'normal' },
+  ],
+  display: 'swap',
+  variable: '--font-noto-serif-tc',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 /* ── SEO Metadata ── */
 const SITE_URL = 'https://ailav.com';
@@ -41,6 +68,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: '/manifest.json',
+  other: {
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'AILAV',
+  },
 };
 
 /* ── JSON-LD Structured Data ── */
@@ -52,7 +85,6 @@ const jsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/images/logo.svg`,
   image: `${SITE_URL}/images/og-image.jpg`,
-  telephone: '',
   address: {
     '@type': 'PostalAddress',
     streetAddress: '民壯路43號',
@@ -114,24 +146,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-Hant" data-theme="light">
+    <html lang="zh-Hant" data-theme="light" className={`${cormorant.variable} ${notoSerifTC.variable} ${inter.variable}`}>
       <head>
-        {/* Google Fonts — loaded via <link> (CSS @import gets stripped by PostCSS) */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+TC:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
-        {/* LCP Preload */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85&auto=format&fm=avif"
-          fetchPriority="high"
-        />
         {/* JSON-LD */}
-        <script
+        <Script
+          id="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />

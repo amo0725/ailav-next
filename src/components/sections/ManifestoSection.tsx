@@ -17,8 +17,8 @@ export default function ManifestoSection() {
             loop
             playsInline
             preload="metadata"
-            poster="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80&auto=format&fm=avif"
-            aria-hidden="true"
+            poster="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1280&q=60&auto=format"
+            aria-label="AILAV 品牌影片"
           >
             <source src={MANIFESTO_VIDEO_URL} type="video/mp4" />
           </video>
