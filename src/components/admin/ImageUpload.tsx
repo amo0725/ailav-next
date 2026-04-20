@@ -51,7 +51,7 @@ export default function ImageUpload({ value, onChange, onRemove, aspect, hint }:
       <div className="adm-image-preview" style={aspect ? { aspectRatio: aspect } : undefined}>
         {value ? (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={value} alt="preview" />
+          <img src={value} alt="" />
         ) : (
           <div className="adm-image-placeholder">尚未設定圖片</div>
         )}

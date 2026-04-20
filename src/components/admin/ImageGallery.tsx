@@ -79,7 +79,7 @@ export default function ImageGallery({ values, onChange, max = 8, hint }: Props)
                 type="button"
                 onClick={() => move(i, -1)}
                 disabled={i === 0}
-                title="上移"
+                aria-label={`將第 ${i + 1} 張圖片上移`}
               >
                 ↑
               </button>
@@ -87,11 +87,15 @@ export default function ImageGallery({ values, onChange, max = 8, hint }: Props)
                 type="button"
                 onClick={() => move(i, 1)}
                 disabled={i === values.length - 1}
-                title="下移"
+                aria-label={`將第 ${i + 1} 張圖片下移`}
               >
                 ↓
               </button>
-              <button type="button" onClick={() => remove(i)} title="移除">
+              <button
+                type="button"
+                onClick={() => remove(i)}
+                aria-label={`移除第 ${i + 1} 張圖片`}
+              >
                 ×
               </button>
             </div>

@@ -30,7 +30,7 @@ export async function loginPasswordAction(
   formData: FormData
 ): Promise<LoginState> {
   const ip = await getClientIp();
-  const limit = await checkLoginRateLimit(ip);
+  const limit = await checkLoginRateLimit(ip, 'password');
   if (!limit.allowed) {
     return { stage: 'password', error: '嘗試次數過多，請稍後再試。' };
   }
@@ -47,11 +47,16 @@ export async function loginPasswordAction(
     return { stage: 'password', error: '密碼錯誤。' };
   }
 
+  // Destroy any pre-existing session before issuing a new stage cookie
+  // to prevent session-fixation (attacker plants cookie, then admin logs in).
   const session = await getSession();
-  session.stage = 'password';
-  session.authenticated = false;
-  session.issuedAt = Date.now();
-  await session.save();
+  await session.destroy();
+
+  const fresh = await getSession();
+  fresh.stage = 'password';
+  fresh.authenticated = false;
+  fresh.issuedAt = Date.now();
+  await fresh.save();
   return { stage: 'totp' };
 }
 
@@ -59,12 +64,6 @@ export async function loginTotpAction(
   _prev: LoginState | undefined,
   formData: FormData
 ): Promise<LoginState> {
-  const ip = await getClientIp();
-  const limit = await checkLoginRateLimit(ip);
-  if (!limit.allowed) {
-    return { stage: 'totp', error: '嘗試次數過多，請稍後再試。' };
-  }
-
   const session = await getSession();
   if (
     session.stage !== 'password' ||
@@ -73,6 +72,12 @@ export async function loginTotpAction(
   ) {
     await session.destroy();
     return { stage: 'password', error: '驗證階段已過期，請重新輸入密碼。' };
+  }
+
+  const ip = await getClientIp();
+  const limit = await checkLoginRateLimit(ip, 'totp', String(session.issuedAt));
+  if (!limit.allowed) {
+    return { stage: 'totp', error: '嘗試次數過多，請稍後再試。' };
   }
 
   const parsed = TotpSchema.safeParse({ code: formData.get('code') });
@@ -84,10 +89,14 @@ export async function loginTotpAction(
     return { stage: 'totp', error: '驗證碼錯誤。' };
   }
 
-  session.authenticated = true;
-  session.stage = 'totp';
-  session.issuedAt = Date.now();
-  await session.save();
+  // Session rotation: destroy the stage-carrying cookie and mint a brand-new
+  // authenticated session so any fixated cookie value is invalidated.
+  await session.destroy();
+  const fresh = await getSession();
+  fresh.authenticated = true;
+  fresh.stage = 'totp';
+  fresh.issuedAt = Date.now();
+  await fresh.save();
   redirect('/admin');
 }
 

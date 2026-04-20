@@ -1,15 +1,9 @@
 import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { getSession } from '@/lib/auth/session';
+import { sniffImage } from '@/lib/storage/sniff-image';
 
 const MAX_SIZE = 10 * 1024 * 1024;
-const ALLOWED_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/avif',
-  'image/gif',
-]);
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -33,20 +27,28 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'Missing file' }, { status: 400 });
   }
-  if (!ALLOWED_TYPES.has(file.type)) {
-    return NextResponse.json({ error: 'Unsupported image type' }, { status: 415 });
-  }
   if (file.size > MAX_SIZE) {
     return NextResponse.json({ error: 'File too large (max 10 MB)' }, { status: 413 });
   }
 
-  const ext = (file.name.split('.').pop() ?? 'bin').toLowerCase().slice(0, 6);
-  const pathname = `uploads/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const buffer = await file.arrayBuffer();
+  const sniffed = sniffImage(buffer);
+  if (!sniffed) {
+    return NextResponse.json(
+      { error: '不支援的檔案格式，僅接受 JPEG / PNG / WebP / AVIF / GIF' },
+      { status: 415 }
+    );
+  }
+
+  // Pathname is built exclusively from sniffed type + random token.
+  // The client-provided filename is never reflected into the stored path.
+  const token = crypto.randomUUID();
+  const pathname = `uploads/${Date.now()}-${token}.${sniffed.extension}`;
 
   try {
-    const blob = await put(pathname, file, {
+    const blob = await put(pathname, buffer, {
       access: 'public',
-      contentType: file.type,
+      contentType: sniffed.mime,
       cacheControlMaxAge: 60 * 60 * 24 * 365,
     });
     return NextResponse.json({ url: blob.url });

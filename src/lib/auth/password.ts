@@ -15,21 +15,15 @@ function resolveHash(): string | null {
 
 export async function verifyPassword(plain: string): Promise<boolean> {
   const hash = resolveHash();
-  if (!hash) {
-    console.error('[auth] password hash env is empty/unset');
-    return false;
-  }
-  if (hash.length < 50 || !hash.startsWith('$2')) {
-    console.error(
-      `[auth] hash looks malformed (length=${hash.length}). Your env parser may have eaten "$" sequences — use ADMIN_PASSWORD_HASH_B64 instead.`
-    );
+  if (!hash || hash.length < 50 || !hash.startsWith('$2')) {
+    console.error('[auth] hash format invalid');
     return false;
   }
   if (!plain || typeof plain !== 'string') return false;
   try {
     return await bcrypt.compare(plain, hash);
-  } catch (e) {
-    console.error('[auth] bcrypt error:', e);
+  } catch {
+    console.error('[auth] bcrypt compare failed');
     return false;
   }
 }

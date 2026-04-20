@@ -25,9 +25,10 @@ export default function LoginForm({ initialStage }: Props) {
   const [trackedPwStage, setTrackedPwStage] = useState<Stage | undefined>();
   const [trackedTotpStage, setTrackedTotpStage] = useState<Stage | undefined>();
 
-  // Adjust state during render when server action state changes.
-  // React officially endorses this over useEffect+setState (see React docs:
-  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-state-when-a-prop-changes).
+  // Adjust state during render when server action state changes
+  // (React-endorsed alternative to useEffect + setState).
+  // The stage-specific form unmounts/mounts on transition, so `autoFocus`
+  // on each input is enough to put focus in the right place.
   if (pwState?.stage !== trackedPwStage) {
     setTrackedPwStage(pwState?.stage);
     if (pwState?.stage === 'totp') setStage('totp');
@@ -40,7 +41,11 @@ export default function LoginForm({ initialStage }: Props) {
   if (stage === 'password') {
     return (
       <form action={pwAction}>
-        {pwState?.error && <div className="adm-alert error">{pwState.error}</div>}
+        {pwState?.error && (
+          <div className="adm-alert error" role="alert" aria-live="polite">
+            {pwState.error}
+          </div>
+        )}
         <div className="adm-field">
           <label htmlFor="password">密碼</label>
           <input
@@ -67,7 +72,11 @@ export default function LoginForm({ initialStage }: Props) {
 
   return (
     <form action={totpAction}>
-      {totpState?.error && <div className="adm-alert error">{totpState.error}</div>}
+      {totpState?.error && (
+        <div className="adm-alert error" role="alert" aria-live="polite">
+          {totpState.error}
+        </div>
+      )}
       <div className="adm-field">
         <label htmlFor="code">驗證碼</label>
         <input
