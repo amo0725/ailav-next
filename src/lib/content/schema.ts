@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isAllowedMapUrl } from './map-url';
 
 export const ChefAwardSchema = z.object({
   stat: z.string().min(1).max(40),
@@ -40,7 +41,12 @@ export const RestaurantSchema = z.object({
   lat: z.number(),
   lng: z.number(),
   hours: HoursSchema,
-  mapEmbedUrl: z.string().url(),
+  mapEmbedUrl: z
+    .string()
+    .url()
+    .refine(isAllowedMapUrl, {
+      message: '只接受 Google Maps 嵌入網址（https://www.google.com/maps/embed…）',
+    }),
 });
 
 export const HeroScatterImageSchema = z.object({

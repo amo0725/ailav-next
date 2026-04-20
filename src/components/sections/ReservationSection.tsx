@@ -1,6 +1,8 @@
 import type { Restaurant } from '@/lib/content/types';
+import { isAllowedMapUrl } from '@/lib/content/map-url';
 
 export default function ReservationSection({ restaurant }: { restaurant: Restaurant }) {
+  const mapSrc = isAllowedMapUrl(restaurant.mapEmbedUrl) ? restaurant.mapEmbedUrl : '';
   return (
     <section
       className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] py-[clamp(80px,12vw,180px)]"
@@ -44,14 +46,21 @@ export default function ReservationSection({ restaurant }: { restaurant: Restaur
           </a>
         </div>
         <div className="rv rv-d2 aspect-square lg:aspect-square overflow-hidden">
-          <iframe
-            className="w-full h-full border-0 saturate-[.4] contrast-[1.1] transition-[filter] duration-300 hover:saturate-[.7]"
-            src={restaurant.mapEmbedUrl}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="AILAV 餐廳位置"
-          />
+          {mapSrc ? (
+            <iframe
+              className="w-full h-full border-0 saturate-[.4] contrast-[1.1] transition-[filter] duration-300 hover:saturate-[.7]"
+              src={mapSrc}
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="AILAV 餐廳位置"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[var(--bg2)] text-[var(--fg3)] text-sm">
+              地圖暫時無法顯示
+            </div>
+          )}
         </div>
       </div>
     </section>

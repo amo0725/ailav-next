@@ -60,7 +60,7 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
         </div>
         <Field
           label="Google 地圖嵌入網址"
-          hint="到 Google Maps 點分享 → 嵌入網址 → 複製 src 連結"
+          hint="到 Google Maps 點分享 → 嵌入網址 → 複製 src 連結（僅接受 google.com/maps/embed 網址）"
         >
           <textarea
             value={value.mapEmbedUrl}
