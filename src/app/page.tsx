@@ -17,8 +17,11 @@ import SoundToggle from '@/components/ui/SoundToggle';
 import LiquidDistortionFilter from '@/components/common/LiquidDistortionFilter';
 import ScrollRevealInit from '@/components/common/ScrollRevealInit';
 import GlobalEffects from '@/components/common/GlobalEffects';
+import { getContent } from '@/lib/content';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const content = await getContent();
+
   return (
     <>
       {/* Global UI */}
@@ -37,17 +40,17 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main id="main">
-        <HeroSection />
-        <ConceptSection />
+        <HeroSection hero={content.hero} />
+        <ConceptSection concept={content.concept} />
         <MarqueeSection />
-        <ChefSection />
-        <ManifestoSection />
-        <MenuSection />
-        <ReservationSection />
+        <ChefSection chefs={content.chefs} />
+        <ManifestoSection manifesto={content.manifesto} />
+        <MenuSection items={content.menu} />
+        <ReservationSection restaurant={content.restaurant} />
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer tagline={content.site.tagline} />
 
       {/* Floating UI */}
       <AccessibilityPanel />

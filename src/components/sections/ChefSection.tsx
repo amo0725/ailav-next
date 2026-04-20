@@ -1,7 +1,7 @@
-import Image from 'next/image';
-import { CHEFS } from '@/lib/constants';
+import type { Chef } from '@/lib/content/types';
+import ChefImageHover from './ChefImageHover';
 
-export default function ChefSection() {
+export default function ChefSection({ chefs }: { chefs: Chef[] }) {
   return (
     <section
       className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] py-[clamp(80px,12vw,180px)]"
@@ -17,7 +17,7 @@ export default function ChefSection() {
           </h2>
         </div>
 
-        {CHEFS.map((chef, index) => (
+        {chefs.map((chef, index) => (
           <div key={chef.id}>
             {index > 0 && (
               <div className="w-10 h-px bg-[var(--accent)] mx-auto my-[clamp(60px,8vw,100px)] opacity-30"></div>
@@ -33,12 +33,9 @@ export default function ChefSection() {
                 className="chef-img img-rv rv dof-focus relative aspect-[16/10] lg:aspect-[4/5] overflow-hidden"
                 style={chef.flip ? { direction: 'ltr' } : undefined}
               >
-                <Image
-                  className="object-cover saturate-[.75]"
-                  src={chef.image}
+                <ChefImageHover
+                  images={chef.images}
                   alt={`主廚 ${chef.name.split(' — ')[0]}`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 45vw"
                 />
               </div>
               <div className="dof-blur" style={chef.flip ? { direction: 'ltr' } : undefined}>
@@ -55,21 +52,23 @@ export default function ChefSection() {
                     {paragraph}
                   </p>
                 ))}
-                <div
-                  className={`awards rv rv-d${chef.bio.length + 1} mt-6 pt-[18px] border-t border-[rgba(0,0,0,.06)] flex flex-wrap gap-7`}
-                >
-                  {chef.awards.map((award, i) => (
-                    <div key={i} className="award">
-                      <strong>{award.stat}</strong>
-                      {award.label.split('\n').map((line, j) => (
-                        <span key={j}>
-                          {j > 0 && <br />}
-                          {line}
-                        </span>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                {chef.awards.length > 0 && (
+                  <div
+                    className={`awards rv rv-d${chef.bio.length + 1} mt-6 pt-[18px] border-t border-[rgba(0,0,0,.06)] flex flex-wrap gap-7`}
+                  >
+                    {chef.awards.map((award, i) => (
+                      <div key={i} className="award">
+                        <strong>{award.stat}</strong>
+                        {award.label.split('\n').map((line, j) => (
+                          <span key={j}>
+                            {j > 0 && <br />}
+                            {line}
+                          </span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
