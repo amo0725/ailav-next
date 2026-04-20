@@ -3,9 +3,11 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
-import { HERO_MAIN_IMAGE, HERO_SCATTER_IMAGES } from '@/lib/constants';
+import type { Hero } from '@/lib/content/types';
 
-export default function HeroSection() {
+export default function HeroSection({ hero }: { hero: Hero }) {
+  const HERO_MAIN_IMAGE = hero.mainImage;
+  const HERO_SCATTER_IMAGES = hero.scatterImages;
   const heroAreaRef = useRef<HTMLElement>(null);
   const heroPinRef = useRef<HTMLDivElement>(null);
   const heroImgRef = useRef<HTMLDivElement>(null);

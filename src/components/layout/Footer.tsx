@@ -1,9 +1,9 @@
-import { NAV_LINKS, SOCIAL, SITE_TAGLINE } from '@/lib/constants';
+import { NAV_LINKS, SOCIAL } from '@/lib/constants';
 
 const LINK_CLASS = 'relative text-[.7rem] tracking-[.22em] uppercase text-[var(--fg3)] transition-colors duration-300 hover:text-[var(--fg)]';
 const SOCIAL_BTN = 'w-9 h-9 flex items-center justify-center border border-[rgba(0,0,0,.08)] rounded-full text-[var(--fg3)] transition-all duration-300 hover:bg-[var(--fg)] hover:text-[var(--bg)] hover:border-[var(--fg)]';
 
-export default function Footer() {
+export default function Footer({ tagline }: { tagline: string }) {
   return (
     <footer className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] pt-[clamp(60px,8vw,100px)] pb-[clamp(32px,4vw,48px)]">
       <div className="mx-auto max-w-[var(--max)] flex flex-col items-center text-center gap-8">
@@ -15,7 +15,7 @@ export default function Footer() {
           height={60}
         />
         <p className="[font-family:var(--serif)] text-[.88rem] font-normal tracking-[.32em] uppercase text-[var(--fg2)] -mt-2">
-          {SITE_TAGLINE}
+          {tagline}
         </p>
         <div className="foot-divider w-10 h-px bg-[var(--fg3)] opacity-15"></div>
         <ul className="foot-links flex gap-[clamp(20px,3vw,36px)] list-none flex-wrap justify-center">

@@ -1,6 +1,8 @@
-import { RESTAURANT } from '@/lib/constants';
+import type { Restaurant } from '@/lib/content/types';
+import { isAllowedMapUrl } from '@/lib/content/map-url';
 
-export default function ReservationSection() {
+export default function ReservationSection({ restaurant }: { restaurant: Restaurant }) {
+  const mapSrc = isAllowedMapUrl(restaurant.mapEmbedUrl) ? restaurant.mapEmbedUrl : '';
   return (
     <section
       className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] py-[clamp(80px,12vw,180px)]"
@@ -16,19 +18,24 @@ export default function ReservationSection() {
           </h2>
           <div className="info-detail rv rv-d2">
             <h3>Address</h3>
-            <p>{RESTAURANT.address}</p>
+            <p>{restaurant.address}</p>
           </div>
           <div className="info-detail rv rv-d2">
-            <h3>Lunch</h3>
-            <p>{RESTAURANT.hours.lunch.days} {RESTAURANT.hours.lunch.time}</p>
+            <h3>{restaurant.hours.mainCourse.label}</h3>
+            <p>{restaurant.hours.mainCourse.days}　{restaurant.hours.mainCourse.time}</p>
+            <p className="text-[var(--fg3)] text-[.8rem] mt-1">現場排隊翻桌，不提供訂位</p>
           </div>
           <div className="info-detail rv rv-d3">
-            <h3>Dinner</h3>
-            <p>{RESTAURANT.hours.dinner.days} {RESTAURANT.hours.dinner.time}</p>
+            <h3>{restaurant.hours.tasting.label}</h3>
+            <p>{restaurant.hours.tasting.days}　{restaurant.hours.tasting.time}</p>
           </div>
           <div className="info-detail rv rv-d3">
+            <h3>{restaurant.hours.wineBar.label}</h3>
+            <p>{restaurant.hours.wineBar.days}　{restaurant.hours.wineBar.time}</p>
+          </div>
+          <div className="info-detail rv rv-d4">
             <h3>Closed</h3>
-            <p>{RESTAURANT.hours.closed}</p>
+            <p>{restaurant.hours.closed}</p>
           </div>
           <a
             href="#"
@@ -39,14 +46,21 @@ export default function ReservationSection() {
           </a>
         </div>
         <div className="rv rv-d2 aspect-square lg:aspect-square overflow-hidden">
-          <iframe
-            className="w-full h-full border-0 saturate-[.4] contrast-[1.1] transition-[filter] duration-300 hover:saturate-[.7]"
-            src={RESTAURANT.mapEmbedUrl}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="AILAV 餐廳位置"
-          />
+          {mapSrc ? (
+            <iframe
+              className="w-full h-full border-0 saturate-[.4] contrast-[1.1] transition-[filter] duration-300 hover:saturate-[.7]"
+              src={mapSrc}
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="AILAV 餐廳位置"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-[var(--bg2)] text-[var(--fg3)] text-sm">
+              地圖暫時無法顯示
+            </div>
+          )}
         </div>
       </div>
     </section>
