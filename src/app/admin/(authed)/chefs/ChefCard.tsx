@@ -2,7 +2,12 @@
 
 import type { Chef } from '@/lib/content/types';
 import Field from '@/components/admin/Field';
-import ImageGallery from '@/components/admin/ImageGallery';
+import ImageAssetGallery from '@/components/admin/ImageAssetGallery';
+
+const CHEF_PREVIEWS = [
+  { label: '桌機 4:5', ratio: 4 / 5 },
+  { label: '手機 16:10', ratio: 16 / 10 },
+];
 
 type Props = {
   chef: Chef;
@@ -157,11 +162,12 @@ export default function ChefCard({
           <h4 style={{ marginBottom: 12, fontSize: '.85rem', color: 'var(--adm-fg2)' }}>
             圖片（hover 時依序切換；第一張為預設封面）
           </h4>
-          <ImageGallery
+          <ImageAssetGallery
             values={chef.images}
             onChange={(next) => patchChef({ images: next })}
             max={8}
-            hint="建議直向構圖（4:5），至少 2 張才能觸發 hover 切換"
+            previewAspects={CHEF_PREVIEWS}
+            hint="建議直向構圖（4:5），至少 2 張才能觸發 hover 切換。點 ⊕ 編輯每張圖的焦點與 Alt"
           />
 
           <div className="adm-divider" />

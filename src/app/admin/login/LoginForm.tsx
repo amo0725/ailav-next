@@ -24,6 +24,7 @@ export default function LoginForm({ initialStage }: Props) {
   const [stage, setStage] = useState<Stage>(initialStage);
   const [trackedPwStage, setTrackedPwStage] = useState<Stage | undefined>();
   const [trackedTotpStage, setTrackedTotpStage] = useState<Stage | undefined>();
+  const [showPassword, setShowPassword] = useState(false);
 
   // Adjust state during render when server action state changes
   // (React-endorsed alternative to useEffect + setState).
@@ -48,14 +49,40 @@ export default function LoginForm({ initialStage }: Props) {
         )}
         <div className="adm-field">
           <label htmlFor="password">密碼</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            autoFocus
-          />
+          <div className="adm-pw-wrap">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              autoFocus
+            />
+            <button
+              type="button"
+              className="adm-pw-toggle"
+              onClick={() => setShowPassword((s) => !s)}
+              aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
+              aria-pressed={showPassword}
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                /* Eye-off (closed) */
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 7 11 7a13.16 13.16 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 7 11 7a9.74 9.74 0 0 0 5.39-1.61" />
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                </svg>
+              ) : (
+                /* Eye (open) */
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
           <p className="hint">第一步：輸入管理員密碼</p>
         </div>
         <button

@@ -1,7 +1,11 @@
 import type { Manifesto } from '@/lib/content/types';
+import { srcOf } from '@/lib/content/image';
 
 export default function ManifestoSection({ manifesto }: { manifesto: Manifesto }) {
   const [w0, w1, w2] = manifesto.words;
+  // <video poster> only accepts a URL string — focal/alt are not applicable
+  // (video itself is the visible content; poster only flashes briefly).
+  const posterUrl = srcOf(manifesto.posterImage);
   return (
     <section
       className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] py-[clamp(80px,12vw,160px)]"
@@ -18,7 +22,7 @@ export default function ManifestoSection({ manifesto }: { manifesto: Manifesto }
             loop
             playsInline
             preload="metadata"
-            poster={manifesto.posterImage}
+            poster={posterUrl}
             aria-label="AILAV 品牌影片"
           >
             <source src={manifesto.videoUrl} type="video/mp4" />

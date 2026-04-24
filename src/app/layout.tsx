@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Inter } from 'next/font/google';
-import localFont from 'next/font/local';
+import { Cormorant_Garamond, Inter, Noto_Serif_TC } from 'next/font/google';
 import Script from 'next/script';
+import { getContent } from '@/lib/content';
+import type { MenuCard, MenuItem } from '@/lib/content/types';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -12,11 +13,13 @@ const cormorant = Cormorant_Garamond({
   variable: '--font-cormorant',
 });
 
-const notoSerifTC = localFont({
-  src: [
-    { path: '../fonts/NotoSerifTC-Light-subset.woff2', weight: '300', style: 'normal' },
-    { path: '../fonts/NotoSerifTC-Regular-subset.woff2', weight: '400', style: 'normal' },
-  ],
+// Noto Serif TC ships as ~100 unicode-range shards; the browser only
+// downloads the shards containing characters actually rendered on the page,
+// which means CMS-edited content never falls back to a system font for
+// missing glyphs (the issue with our previous build-time pyftsubset).
+const notoSerifTC = Noto_Serif_TC({
+  weight: ['300', '400'],
+  preload: false,
   display: 'swap',
   variable: '--font-noto-serif-tc',
 });
@@ -77,74 +80,137 @@ export const metadata: Metadata = {
 };
 
 /* ── JSON-LD Structured Data ── */
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Restaurant',
-  name: 'AILAV',
-  description: "Pronounced as 'I Love'. A migratory chef's journey of flavor and love.",
-  url: SITE_URL,
-  logo: `${SITE_URL}/images/logo.svg`,
-  image: `${SITE_URL}/images/og-image.jpg`,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '民壯路43號',
-    addressLocality: '三民區',
-    addressRegion: '高雄市',
-    postalCode: '807',
-    addressCountry: 'TW',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: 22.639763,
-    longitude: 120.340723,
-  },
-  priceRange: '$$',
-  servesCuisine: ['Asian Fusion', 'Contemporary', 'French-Asian'],
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
-      opens: '12:00',
-      closes: '15:00',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      opens: '18:30',
-      closes: '22:30',
-    },
-  ],
-  sameAs: ['https://www.instagram.com/ailav_kaohsiung/'],
-  hasMenu: {
+function priceFromString(price: string): { value: string; currency: string } | null {
+  if (!price) return null;
+  const match = price.match(/(\d[\d,.]*)/);
+  if (!match) return null;
+  return {
+    value: match[1].replace(/,/g, ''),
+    currency: 'TWD',
+  };
+}
+
+function buildMenuLd(menu: MenuItem[], cards: MenuCard[]) {
+  // Detailed dish list (richer SEO data) — drawn from the printed-style cards.
+  const cardSections = cards.map((card) => {
+    const items =
+      card.kind === 'tasting'
+        ? card.courses.flatMap((c) =>
+            c.items.map((it) => ({
+              '@type': 'MenuItem' as const,
+              name: it.titleZh || it.titleEn,
+              ...(it.titleEn ? { description: it.titleEn } : {}),
+            }))
+          )
+        : card.items.map((it) => {
+            const price = priceFromString(it.price);
+            return {
+              '@type': 'MenuItem' as const,
+              name: it.titleZh || it.titleEn,
+              ...(it.titleEn ? { description: it.titleEn } : {}),
+              ...(price
+                ? {
+                    offers: {
+                      '@type': 'Offer',
+                      price: price.value,
+                      priceCurrency: price.currency,
+                    },
+                  }
+                : {}),
+            };
+          });
+    return {
+      '@type': 'MenuSection' as const,
+      name: card.name,
+      hasMenuItem: items,
+    };
+  });
+
+  // Session overview (from homepage menu) — gives Google the per-session price.
+  const sessionSections = menu.map((it) => {
+    const price = priceFromString(it.price);
+    return {
+      '@type': 'MenuSection' as const,
+      name: it.title,
+      ...(it.description ? { description: it.description } : {}),
+      hasMenuItem: {
+        '@type': 'MenuItem' as const,
+        name: it.title,
+        ...(it.description ? { description: it.description } : {}),
+        ...(price
+          ? {
+              offers: {
+                '@type': 'Offer',
+                price: price.value,
+                priceCurrency: price.currency,
+              },
+            }
+          : {}),
+      },
+    };
+  });
+
+  return {
     '@type': 'Menu',
-    hasMenuSection: [
+    hasMenuSection: [...cardSections, ...sessionSections],
+  };
+}
+
+function buildJsonLd(menu: MenuItem[], cards: MenuCard[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    name: 'AILAV',
+    description: "Pronounced as 'I Love'. A migratory chef's journey of flavor and love.",
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/logo.svg`,
+    image: `${SITE_URL}/images/og-image.jpg`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '民壯路43號',
+      addressLocality: '三民區',
+      addressRegion: '高雄市',
+      postalCode: '807',
+      addressCountry: 'TW',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 22.639763,
+      longitude: 120.340723,
+    },
+    priceRange: '$$',
+    servesCuisine: ['Asian Fusion', 'Contemporary', 'French-Asian'],
+    openingHoursSpecification: [
       {
-        '@type': 'MenuSection',
-        name: '午間套餐',
-        hasMenuItem: {
-          '@type': 'MenuItem',
-          name: '午間套餐',
-          offers: { '@type': 'Offer', price: '980', priceCurrency: 'TWD' },
-        },
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
+        opens: '12:00',
+        closes: '15:00',
       },
       {
-        '@type': 'MenuSection',
-        name: '晚間套餐',
-        hasMenuItem: {
-          '@type': 'MenuItem',
-          name: '晚間套餐',
-          offers: { '@type': 'Offer', price: '1280', priceCurrency: 'TWD' },
-        },
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '18:30',
+        closes: '22:30',
       },
     ],
-  },
-};
+    sameAs: ['https://www.instagram.com/ailav_kaohsiung/'],
+    hasMenu: buildMenuLd(menu, cards),
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const content = await getContent();
+  const jsonLd = buildJsonLd(content.menu, content.menuCards);
+  // Escape `<` so admin-supplied content (menu names, dish titles) cannot
+  // break out of the inline <script> tag with `</script><script>…`.
+  // < parses back to `<` for any JSON-LD consumer — structured data
+  // semantics are unchanged.
+  const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
   return (
     <html lang="zh-Hant" data-theme="light" className={`${cormorant.variable} ${notoSerifTC.variable} ${inter.variable}`}>
       <head>
@@ -152,7 +218,7 @@ export default function RootLayout({
         <Script
           id="json-ld"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdSafe }}
         />
       </head>
       <body>{children}</body>

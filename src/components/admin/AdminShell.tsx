@@ -11,7 +11,8 @@ const NAV = [
   { href: '/admin/concept', label: '理念' },
   { href: '/admin/chefs', label: '主廚' },
   { href: '/admin/manifesto', label: '品牌宣言' },
-  { href: '/admin/menu', label: '菜單' },
+  { href: '/admin/menu', label: '菜單（時段）' },
+  { href: '/admin/menu-cards', label: '菜單卡（照片）' },
   { href: '/admin/reservation', label: '預約 / 資訊' },
 ];
 

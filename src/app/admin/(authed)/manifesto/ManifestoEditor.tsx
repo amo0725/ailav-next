@@ -4,8 +4,15 @@ import type { Manifesto, ManifestoWord } from '@/lib/content/types';
 import { updateManifesto } from '@/app/actions/content';
 import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
-import ImageUpload from '@/components/admin/ImageUpload';
+import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import type { ImageAsset } from '@/lib/content/image';
+
+const POSTER_PREVIEWS = [
+  { label: '桌機 2.2:1', ratio: 2.2 },
+  { label: '平板 16:9', ratio: 16 / 9 },
+  { label: '手機 4:3', ratio: 4 / 3 },
+];
 
 export default function ManifestoEditor({ initial }: { initial: Manifesto }) {
   const { value, update, status, error, onSubmit } = useEditorForm<Manifesto>(
@@ -59,11 +66,16 @@ export default function ManifestoEditor({ initial }: { initial: Manifesto }) {
           />
         </Field>
         <div style={{ marginTop: 14 }}>
-          <h4 style={{ fontSize: '.85rem', color: 'var(--adm-fg2)', marginBottom: 10 }}>海報圖（影片尚未載入時顯示）</h4>
-          <ImageUpload
+          <h4 style={{ fontSize: '.85rem', color: 'var(--adm-fg2)', marginBottom: 10 }}>
+            海報圖（影片尚未載入時顯示）
+          </h4>
+          <ImageAssetField
             value={value.posterImage}
-            onChange={(url) => update((v) => ({ ...v, posterImage: url }))}
-            aspect="2.2 / 1"
+            onChange={(asset: ImageAsset) =>
+              update((v) => ({ ...v, posterImage: asset }))
+            }
+            uploadAspect="2.2 / 1"
+            previewAspects={POSTER_PREVIEWS}
           />
         </div>
       </div>

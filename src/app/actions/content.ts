@@ -6,6 +6,7 @@ import {
   ConceptSchema,
   HeroSchema,
   ManifestoSchema,
+  MenuCardsSchema,
   MenuItemSchema,
   RestaurantSchema,
   SiteSchema,
@@ -66,6 +67,10 @@ export async function updateChefs(value: unknown): Promise<Result> {
 
 export async function updateMenu(value: unknown): Promise<Result> {
   return patch('menu', z.array(MenuItemSchema).min(1).max(12), value);
+}
+
+export async function updateMenuCards(value: unknown): Promise<Result> {
+  return patch('menuCards', MenuCardsSchema, value);
 }
 
 export async function updateRestaurant(value: unknown): Promise<Result> {

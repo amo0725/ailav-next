@@ -40,11 +40,8 @@ export default function ChefsEditor({ initial }: { initial: Chef[] }) {
   };
 
   const addChef = () => {
-    update((chefs) => {
-      const next = [...chefs, emptyChef()];
-      setOpenIdx(next.length - 1);
-      return next;
-    });
+    setOpenIdx(value.length);
+    update((chefs) => [...chefs, emptyChef()]);
   };
 
   const removeChef = (i: number) => {

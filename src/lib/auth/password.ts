@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { securityWarn } from '@/lib/log';
 
 function resolveHash(): string | null {
   const b64 = process.env.ADMIN_PASSWORD_HASH_B64;
@@ -16,14 +17,14 @@ function resolveHash(): string | null {
 export async function verifyPassword(plain: string): Promise<boolean> {
   const hash = resolveHash();
   if (!hash || hash.length < 50 || !hash.startsWith('$2')) {
-    console.error('[auth] hash format invalid');
+    securityWarn('admin password hash format invalid');
     return false;
   }
   if (!plain || typeof plain !== 'string') return false;
   try {
     return await bcrypt.compare(plain, hash);
   } catch {
-    console.error('[auth] bcrypt compare failed');
+    securityWarn('bcrypt compare threw — treat as auth failure');
     return false;
   }
 }

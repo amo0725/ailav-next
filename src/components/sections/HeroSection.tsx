@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Image from 'next/image';
+import FocalImage from '@/components/common/FocalImage';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import type { Hero } from '@/lib/content/types';
 
@@ -120,10 +120,10 @@ export default function HeroSection({ hero }: { hero: Hero }) {
           id="heroImg"
           ref={heroImgRef}
         >
-          <Image
-            className="object-cover brightness-[.84] saturate-[.78]"
-            src={HERO_MAIN_IMAGE}
-            alt="AILAV 精緻料理擺盤 高雄餐廳"
+          <FocalImage
+            className="brightness-[.84] saturate-[.78]"
+            asset={HERO_MAIN_IMAGE}
+            fallbackAlt="AILAV 精緻料理擺盤 高雄餐廳"
             fill
             priority
             sizes="100vw"
@@ -161,10 +161,10 @@ export default function HeroSection({ hero }: { hero: Hero }) {
             className={`hero-gi ${img.className} absolute overflow-hidden z-[1] pointer-events-none shadow-[0_8px_30px_rgba(0,0,0,.08)] hidden md:block`}
             data-gi=""
           >
-            <Image
-              className="object-cover saturate-[.68] brightness-[.95] [transform:scale(1.15)] transition-transform duration-[1.4s]"
-              src={img.src}
-              alt={img.alt}
+            <FocalImage
+              className="saturate-[.68] brightness-[.95] [transform:scale(1.15)] transition-transform duration-[1.4s]"
+              asset={img.src}
+              fallbackAlt={img.alt ?? ''}
               fill
               sizes="20vw"
             />

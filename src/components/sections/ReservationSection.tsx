@@ -1,8 +1,12 @@
 import type { Restaurant } from '@/lib/content/types';
 import { isAllowedMapUrl } from '@/lib/content/map-url';
+import { safeReservationUrl } from '@/lib/content/reservation-url';
 
 export default function ReservationSection({ restaurant }: { restaurant: Restaurant }) {
   const mapSrc = isAllowedMapUrl(restaurant.mapEmbedUrl) ? restaurant.mapEmbedUrl : '';
+  // Defence in depth: schema already restricts to http(s), but re-checking
+  // at render time means even a tampered blob can't inject `javascript:` URIs.
+  const reserveUrl = safeReservationUrl(restaurant.reservationUrl);
   return (
     <section
       className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] py-[clamp(80px,12vw,180px)]"
@@ -37,13 +41,17 @@ export default function ReservationSection({ restaurant }: { restaurant: Restaur
             <h3>Closed</h3>
             <p>{restaurant.hours.closed}</p>
           </div>
-          <a
-            href="#"
-            className="cta cta-shimmer rv rv-d4"
-            id="ctaReserve"
-          >
-            <span>Online Reservation</span>
-          </a>
+          {reserveUrl && (
+            <a
+              href={reserveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta cta-shimmer rv rv-d4"
+              id="ctaReserve"
+            >
+              <span>Online Reservation</span>
+            </a>
+          )}
         </div>
         <div className="rv rv-d2 aspect-square lg:aspect-square overflow-hidden">
           {mapSrc ? (
