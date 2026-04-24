@@ -36,12 +36,15 @@ function emptyCard(): MenuCard {
 
 // Re-key the seed cards so a second click of "load template" doesn't collide
 // with cards already loaded (or with cards the admin has created themselves).
+// Also re-suffixes `slug` — otherwise multiple appends would produce duplicate
+// `tasting` / `after-hours` slugs and the /menu#slug anchors would collide.
 function freshenIds(cards: MenuCard[]): MenuCard[] {
   const suffix = Math.random().toString(36).slice(2, 6);
   return cards.map((card) => {
     const rekeyed = {
       ...card,
       id: `${card.id}-${suffix}`,
+      slug: `${card.slug}-${suffix}`,
     };
     if (rekeyed.kind === 'tasting') {
       return {

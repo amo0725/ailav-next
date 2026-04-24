@@ -1,30 +1,35 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Status = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 type Phase = 'idle' | 'saving' | 'saved' | 'error';
 type SaveFn<T> = (next: T) => Promise<{ ok: true } | { error: string }>;
 
+/**
+ * Editor form state hook used by every admin editor.
+ *
+ * Tracks dirtiness with a boolean flag flipped by `update`/`set`, instead of
+ * `JSON.stringify(value) !== JSON.stringify(baseline)` on every render.
+ * Stringifying nested CMS trees on every keystroke was wasteful; the flag
+ * approach is O(1) and avoids both the React Compiler `set-state-in-effect`
+ * cascade trap and the deep-comparison overhead.
+ *
+ * Trade-off: editing a value and then manually undoing back to the original
+ * leaves `dirty=true` until save. For a CMS that's fine — saving the same
+ * data is a no-op write that produces an identical blob payload.
+ */
 export function useEditorForm<T>(initial: T, save: SaveFn<T>) {
   const [value, setValue] = useState<T>(initial);
-  // `baseline` is the last-saved value; comparing `value` against it gives us
-  // a derived `isDirty` flag without the setState-in-useEffect anti-pattern
-  // (which React Compiler 1.0 flags and which can cascade re-renders).
-  const [baseline, setBaseline] = useState<T>(initial);
   const [phase, setPhase] = useState<Phase>('idle');
+  const [dirty, setDirty] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const isDirty = useMemo(
-    () => JSON.stringify(value) !== JSON.stringify(baseline),
-    [value, baseline]
-  );
 
   const status: Status =
     phase === 'saving' || phase === 'saved' || phase === 'error'
       ? phase
-      : isDirty
+      : dirty
       ? 'dirty'
       : 'idle';
 
@@ -45,7 +50,7 @@ export function useEditorForm<T>(initial: T, save: SaveFn<T>) {
         setError(res.error);
         return;
       }
-      setBaseline(value);
+      setDirty(false);
       setPhase('saved');
       if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       savedTimerRef.current = setTimeout(() => setPhase('idle'), 2400);
@@ -55,11 +60,15 @@ export function useEditorForm<T>(initial: T, save: SaveFn<T>) {
 
   const update = useCallback((updater: (prev: T) => T) => {
     setValue((prev) => updater(prev));
+    setDirty(true);
+    // Edits cancel a transient "saved" badge so the UI doesn't lie about
+    // the current state being saved.
     setPhase((prev) => (prev === 'saved' ? 'idle' : prev));
   }, []);
 
   const set = useCallback((next: T) => {
     setValue(next);
+    setDirty(true);
     setPhase((prev) => (prev === 'saved' ? 'idle' : prev));
   }, []);
 

@@ -86,11 +86,17 @@ export type Restaurant = {
   lng: number;
   hours: Hours;
   mapEmbedUrl: string;
+  /** Online reservation CTA target. Empty / missing → CTA is hidden.
+   * Validated as http(s) only at the schema layer. */
+  reservationUrl?: string;
 };
 
 export type HeroScatterImage = {
   src: ImageInput;
-  alt: string;
+  /** Legacy outer alt — kept for backward compat with older blobs.
+   * New saves store alt inside the ImageAsset (src.alt).
+   * Renderer prefers inner alt, falls back to this field. */
+  alt?: string;
   className: string;
 };
 

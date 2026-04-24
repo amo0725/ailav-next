@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { toAsset, type ImageAsset, type ImageInput } from '@/lib/content/image';
 import FocalPointPicker, { type AspectPreview } from './FocalPointPicker';
 
@@ -25,6 +25,9 @@ export default function ImageAssetGallery({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  // Stable per-instance prefix so multiple galleries can mount with the same
+  // openIdx without colliding `<label htmlFor>` ↔ `<input id>` pairs.
+  const altInputBase = useId();
 
   const assets = values.map((v) => toAsset(v));
 
@@ -158,9 +161,9 @@ export default function ImageAssetGallery({
             previewAspects={previewAspects}
           />
           <div className="adm-asset-alt" style={{ marginTop: 12 }}>
-            <label htmlFor={`alt-${openIdx}`}>替代文字 (Alt)</label>
+            <label htmlFor={`${altInputBase}-${openIdx}`}>替代文字 (Alt)</label>
             <input
-              id={`alt-${openIdx}`}
+              id={`${altInputBase}-${openIdx}`}
               type="text"
               value={assets[openIdx].alt ?? ''}
               placeholder="給搜尋引擎與輔助閱讀器的描述"

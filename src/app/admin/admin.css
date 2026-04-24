@@ -762,6 +762,45 @@
   }
 }
 
+/* ── Password input + show/hide eye toggle ── */
+.adm-pw-wrap {
+  position: relative;
+}
+
+.adm-pw-wrap input {
+  /* Reserve space on the right so the toggle button doesn't overlap text */
+  padding-right: 40px !important;
+}
+
+.adm-pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  color: var(--adm-fg3);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.adm-pw-toggle:hover {
+  color: var(--adm-fg);
+  background: var(--adm-surface-alt);
+}
+
+.adm-pw-toggle:focus-visible {
+  outline: 2px solid var(--adm-accent);
+  outline-offset: 1px;
+  color: var(--adm-fg);
+}
+
 /* ── Image asset field (upload + focal + alt) ── */
 .adm-asset {
   display: flex;

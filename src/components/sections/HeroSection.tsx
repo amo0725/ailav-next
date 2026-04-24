@@ -164,7 +164,7 @@ export default function HeroSection({ hero }: { hero: Hero }) {
             <FocalImage
               className="saturate-[.68] brightness-[.95] [transform:scale(1.15)] transition-transform duration-[1.4s]"
               asset={img.src}
-              alt={img.alt}
+              fallbackAlt={img.alt ?? ''}
               fill
               sizes="20vw"
             />

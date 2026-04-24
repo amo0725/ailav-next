@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isAllowedMapUrl } from './map-url';
+import { isAllowedReservationUrl } from './reservation-url';
 
 /* ── Image asset schema ────────────────────────────────────────
  * Accepts both legacy plain string URLs and the new {src, focal,
@@ -127,12 +128,30 @@ export const RestaurantSchema = z.object({
     .refine(isAllowedMapUrl, {
       message: '只接受 Google Maps 嵌入網址（https://www.google.com/maps/embed…）',
     }),
+  // Online reservation CTA target. Empty string OR a valid http(s) URL.
+  // Scheme is restricted (no `javascript:` / `data:`) since this is rendered
+  // verbatim into <a href={…}> on the public site.
+  reservationUrl: z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .url()
+        .max(500)
+        .refine(isAllowedReservationUrl, {
+          message: '只接受 http:// 或 https:// 網址',
+        }),
+    ])
+    .optional(),
 });
 
 export const HeroScatterImageSchema = z.object({
   // src can be either a plain URL string (legacy) or an ImageAsset object.
+  // When src is an ImageAsset object, asset.alt is the source of truth.
+  // The outer `alt` is kept optional for backward compat with older blobs
+  // that stored alt as a sibling of src.
   src: ImageAssetSchema,
-  alt: z.string().min(1).max(120),
+  alt: z.string().max(120).optional(),
   className: z.string().min(1).max(40),
 });
 

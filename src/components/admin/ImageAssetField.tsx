@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { toAsset, type FocalPoint, type ImageAsset, type ImageInput } from '@/lib/content/image';
 import FocalPointPicker, { type AspectPreview } from './FocalPointPicker';
 
@@ -37,6 +37,9 @@ export default function ImageAssetField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Stable per-instance id so two fields rendering the same image URL still
+  // get unique label/htmlFor associations (slice-of-URL collided previously).
+  const altInputId = useId();
 
   const asset = toAsset(value);
   const hasImage = !!asset.src;
@@ -134,11 +137,11 @@ export default function ImageAssetField({
 
       {hasImage && !altOwnedExternally && (
         <div className="adm-asset-alt">
-          <label htmlFor={`alt-${asset.src.slice(-12)}`}>
+          <label htmlFor={altInputId}>
             替代文字 (Alt)
           </label>
           <input
-            id={`alt-${asset.src.slice(-12)}`}
+            id={altInputId}
             type="text"
             value={asset.alt ?? ''}
             placeholder="給搜尋引擎與輔助閱讀器的描述"

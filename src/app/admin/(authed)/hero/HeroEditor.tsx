@@ -2,7 +2,6 @@
 
 import type { Hero } from '@/lib/content/types';
 import { updateHero } from '@/app/actions/content';
-import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
@@ -62,7 +61,14 @@ export default function HeroEditor({ initial }: { initial: Hero }) {
           <span className="hint">5 張，每張容器比例不同（顯示在預覽中）</span>
         </div>
         {value.scatterImages.map((img, i) => {
-          const asset = toAsset(img.src);
+          // Display the asset with alt copied from the legacy outer field
+          // when there's no inner alt yet — so admins see existing alts in
+          // the editor even before re-saving onto the new shape.
+          const rawAsset = toAsset(img.src);
+          const displayAsset: ImageAsset = {
+            ...rawAsset,
+            alt: rawAsset.alt ?? img.alt ?? '',
+          };
           const slot = SCATTER_ASPECTS[img.className];
           const previews = slot
             ? [
@@ -83,21 +89,15 @@ export default function HeroEditor({ initial }: { initial: Hero }) {
                 </h4>
               </div>
               <ImageAssetField
-                value={asset}
+                value={displayAsset}
                 onChange={(next: ImageAsset) =>
-                  patchScatter(i, { src: next, alt: next.alt ?? img.alt })
+                  // Mirror the new alt into the legacy outer field too so
+                  // anything still reading img.alt sees the latest value.
+                  patchScatter(i, { src: next, alt: next.alt ?? '' })
                 }
                 uploadAspect={slot ? String(slot.ratio) : '3 / 4'}
                 previewAspects={previews}
-                altOwnedExternally
               />
-              <Field label="替代文字 (Alt)" hint="給搜尋引擎與輔助閱讀器的描述">
-                <input
-                  type="text"
-                  value={img.alt}
-                  onChange={(e) => patchScatter(i, { alt: e.target.value })}
-                />
-              </Field>
             </div>
           );
         })}

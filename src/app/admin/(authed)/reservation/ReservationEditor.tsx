@@ -114,6 +114,26 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
         </Field>
       </div>
 
+      <div className="adm-card">
+        <div className="adm-card-head">
+          <h3>線上訂位</h3>
+          <span className="hint">首頁「Online Reservation」按鈕的連結目標</span>
+        </div>
+        <Field
+          label="預約頁面網址"
+          hint="必須以 http:// 或 https:// 開頭，如 https://inline.app/booking/AILAV。留空則隱藏首頁訂位按鈕。"
+        >
+          <input
+            type="url"
+            placeholder="https://"
+            value={value.reservationUrl ?? ''}
+            onChange={(e) =>
+              update((v) => ({ ...v, reservationUrl: e.target.value }))
+            }
+          />
+        </Field>
+      </div>
+
       <SaveBar status={status} error={error} />
     </form>
   );

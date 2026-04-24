@@ -206,6 +206,11 @@ export default async function RootLayout({
 }>) {
   const content = await getContent();
   const jsonLd = buildJsonLd(content.menu, content.menuCards);
+  // Escape `<` so admin-supplied content (menu names, dish titles) cannot
+  // break out of the inline <script> tag with `</script><script>…`.
+  // < parses back to `<` for any JSON-LD consumer — structured data
+  // semantics are unchanged.
+  const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
   return (
     <html lang="zh-Hant" data-theme="light" className={`${cormorant.variable} ${notoSerifTC.variable} ${inter.variable}`}>
       <head>
@@ -213,7 +218,7 @@ export default async function RootLayout({
         <Script
           id="json-ld"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdSafe }}
         />
       </head>
       <body>{children}</body>
