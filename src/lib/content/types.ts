@@ -1,3 +1,5 @@
+import type { ImageInput } from './image';
+
 export type ChefAward = {
   stat: string;
   label: string;
@@ -6,12 +8,13 @@ export type ChefAward = {
 export type Chef = {
   id: string;
   name: string;
-  images: string[];
+  images: ImageInput[];
   bio: string[];
   awards: ChefAward[];
   flip: boolean;
 };
 
+/* ── Homepage menu (session overview cards) ──────────────────── */
 export type MenuItem = {
   id: string;
   title: string;
@@ -19,6 +22,50 @@ export type MenuItem = {
   description: string;
   note: string;
 };
+
+/* ── Printed-card menus ───────────────────────────────────────── */
+
+export type MenuTheme = {
+  bg: string;
+  fg: string;
+  accent: string;
+};
+
+export type MenuDish = {
+  id: string;
+  titleZh: string;
+  titleEn: string;
+  price: string;
+  image: ImageInput | '';
+  note: string;
+};
+
+export type MenuCardCourse = {
+  id: string;
+  heading: string;
+  items: MenuDish[];
+};
+
+type MenuCardBase = {
+  id: string;
+  slug: string;
+  name: string;
+  subtitle: string;
+  theme: MenuTheme;
+  footnote: string;
+};
+
+export type TastingMenuCard = MenuCardBase & {
+  kind: 'tasting';
+  courses: MenuCardCourse[];
+};
+
+export type ALaCarteMenuCard = MenuCardBase & {
+  kind: 'a-la-carte';
+  items: MenuDish[];
+};
+
+export type MenuCard = TastingMenuCard | ALaCarteMenuCard;
 
 export type HoursBlock = {
   days: string;
@@ -42,13 +89,13 @@ export type Restaurant = {
 };
 
 export type HeroScatterImage = {
-  src: string;
+  src: ImageInput;
   alt: string;
   className: string;
 };
 
 export type Hero = {
-  mainImage: string;
+  mainImage: ImageInput;
   scatterImages: HeroScatterImage[];
 };
 
@@ -61,13 +108,13 @@ export type ManifestoWord = {
 export type Manifesto = {
   words: ManifestoWord[];
   videoUrl: string;
-  posterImage: string;
+  posterImage: ImageInput;
 };
 
 export type Concept = {
   heading: string;
   paragraphs: string[];
-  image: string;
+  image: ImageInput;
 };
 
 export type Site = {
@@ -84,5 +131,8 @@ export type Content = {
   manifesto: Manifesto;
   chefs: Chef[];
   menu: MenuItem[];
+  menuCards: MenuCard[];
   restaurant: Restaurant;
 };
+
+export type { ImageAsset, ImageInput, FocalPoint } from './image';

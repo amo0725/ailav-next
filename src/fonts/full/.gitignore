@@ -1,4 +1,0 @@
-# Full TTF files are too large for git (~10MB each)
-# Download from Google Fonts: https://fonts.google.com/noto/specimen/Noto+Serif+TC
-# Only the subsetted woff2 files should be committed
-*.ttf

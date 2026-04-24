@@ -25,7 +25,17 @@ export class BlobContentRepository implements ContentRepository {
 
     const raw = await res.json();
     const parsed = ContentSchema.safeParse(raw);
-    return parsed.success ? parsed.data : SEED_CONTENT;
+    if (parsed.success) return parsed.data;
+
+    // Older blobs predate the menuCards field (and one short-lived shape
+    // had `menus` instead of `menu`). Lift them in-place so admins can
+    // open the editor on the new build without first re-saving everything.
+    const migrated = migrateLegacyContent(raw);
+    if (migrated) {
+      const reparsed = ContentSchema.safeParse(migrated);
+      if (reparsed.success) return reparsed.data;
+    }
+    return SEED_CONTENT;
   }
 
   async write(content: Content): Promise<void> {
@@ -74,6 +84,31 @@ export class BlobContentRepository implements ContentRepository {
     if (stale.length === 0) return;
     await del(stale.map((b) => b.url));
   }
+}
+
+function migrateLegacyContent(raw: unknown): Record<string, unknown> | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const obj: Record<string, unknown> = { ...(raw as Record<string, unknown>) };
+  let touched = false;
+
+  // Short-lived intermediate shape (now reverted) wrote `menus` instead of
+  // `menu`; surface those entries as the new `menuCards` so we don't lose them.
+  if (!('menuCards' in obj) && Array.isArray(obj.menus)) {
+    obj.menuCards = obj.menus;
+    delete obj.menus;
+    touched = true;
+  }
+  if (!('menuCards' in obj)) {
+    obj.menuCards = [];
+    touched = true;
+  }
+  // Restore the homepage session list if a previous broken save dropped it.
+  if (!Array.isArray(obj.menu) || obj.menu.length === 0) {
+    obj.menu = SEED_CONTENT.menu;
+    touched = true;
+  }
+
+  return touched ? obj : null;
 }
 
 let instance: BlobContentRepository | null = null;

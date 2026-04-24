@@ -6,7 +6,8 @@ const SECTIONS = [
   { href: '/admin/concept', title: '理念', hint: '品牌故事段落與圖片' },
   { href: '/admin/chefs', title: '主廚', hint: '主廚列表、多張圖片、生平、獎項' },
   { href: '/admin/manifesto', title: '品牌宣言', hint: '三個詞、影片、海報' },
-  { href: '/admin/menu', title: '菜單', hint: '各時段套餐項目' },
+  { href: '/admin/menu', title: '菜單（時段）', hint: '首頁顯示的時段概覽卡' },
+  { href: '/admin/menu-cards', title: '菜單卡（照片）', hint: '完整菜單卡片，呈現於 /menu' },
   { href: '/admin/reservation', title: '預約 / 資訊', hint: '地址、營業時間、地圖' },
 ];
 

@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import FocalImage from '@/components/common/FocalImage';
+import type { ImageInput } from '@/lib/content/image';
+import { srcOf } from '@/lib/content/image';
 
 type Props = {
-  images: string[];
+  images: ImageInput[];
   alt: string;
 };
 
@@ -46,14 +48,14 @@ export default function ChefImageHover({ images, alt }: Props) {
       onFocus={() => setHovering(true)}
       onBlur={handleLeave}
     >
-      {images.map((src, i) => (
-        <Image
-          key={src + i}
-          className={`object-cover saturate-[.75] transition-opacity duration-[900ms] ease-out ${
+      {images.map((image, i) => (
+        <FocalImage
+          key={srcOf(image) + i}
+          className={`saturate-[.75] transition-opacity duration-[900ms] ease-out ${
             i === idx ? 'opacity-100' : 'opacity-0'
           }`}
-          src={src}
-          alt={alt}
+          asset={image}
+          fallbackAlt={alt}
           fill
           sizes="(max-width: 1024px) 100vw, 45vw"
           priority={i === 0}

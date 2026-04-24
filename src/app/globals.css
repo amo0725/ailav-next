@@ -2,8 +2,8 @@
 
 /* Override Tailwind's default fonts to match original design exactly */
 @theme {
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: var(--font-cormorant), var(--font-noto-serif-tc), Georgia, serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-serif: var(--font-cormorant), var(--font-noto-serif-tc), "Noto Serif CJK TC", "Songti TC", "PingFang TC", "Microsoft JhengHei", Georgia, serif;
 }
 
 /* =============================================
@@ -14,8 +14,8 @@
   :root {
     --bg: #ffffff; --bg2: #f5f4f0; --fg: #111; --fg2: #555; --fg3: #767676;
     --accent: #8b7355;
-    --serif: var(--font-cormorant), var(--font-noto-serif-tc), Georgia, serif;
-    --sans: var(--font-inter), -apple-system, sans-serif;
+    --serif: var(--font-cormorant), var(--font-noto-serif-tc), "Noto Serif CJK TC", "Songti TC", "PingFang TC", "Microsoft JhengHei", Georgia, serif;
+    --sans: var(--font-inter), -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
     --ease: cubic-bezier(.16,1,.3,1);
     --gutter: clamp(24px,5vw,64px); --max: 1200px;
     --font-mult: 1;
@@ -370,6 +370,414 @@ body {
 @supports(grid-template-rows: subgrid) {
   .menu-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); grid-template-rows: auto; gap: 28px; }
   .mcard { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+}
+
+/* =============================================
+   AILAV MENU — printed-card aesthetic
+   Theme tokens (--menu-bg / --menu-fg / --menu-accent)
+   are injected per-menu by MenuRenderer; everything in
+   here reads from those vars instead of hardcoded values.
+   ============================================= */
+.ailav-menu-frame {
+  background: var(--menu-bg);
+  color: var(--menu-fg);
+  padding: clamp(48px, 8vw, 104px) clamp(24px, 6vw, 80px);
+  border-radius: clamp(8px, 1.2vw, 18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: var(--serif);
+  position: relative;
+  overflow: hidden;
+}
+
+.ailav-menu {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ailav-menu-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+
+.ailav-menu-title {
+  font-family: var(--font-noto-serif-tc), var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  letter-spacing: 0.18em;
+  margin: 4px 0 0;
+}
+
+.ailav-menu-subtitle {
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  letter-spacing: 0.1em;
+  margin: 0;
+  opacity: 0.92;
+}
+
+/* Course headings (AMUSE-BOUCHE) — wide-spaced caps */
+.ailav-course {
+  margin-bottom: clamp(36px, 5vw, 56px);
+}
+
+.ailav-course:last-child {
+  margin-bottom: 0;
+}
+
+.ailav-course-heading {
+  font-family: var(--font-cormorant), var(--serif);
+  font-weight: 300;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+/* Items — ZH on top, EN italic underneath, optional photo + note */
+.ailav-item {
+  margin-bottom: 22px;
+}
+
+.ailav-item:last-child {
+  margin-bottom: 0;
+}
+
+.ailav-item-zh {
+  font-family: var(--font-noto-serif-tc), var(--serif);
+  font-weight: 400;
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+  line-height: 1.6;
+}
+
+.ailav-item-en {
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.35vw, 1.08rem);
+  margin: 0;
+  line-height: 1.55;
+  opacity: 0.95;
+}
+
+.ailav-item-note {
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-size: clamp(0.78rem, 1vw, 0.88rem);
+  opacity: 0.7;
+  margin: 6px 0 0;
+}
+
+.ailav-item-image {
+  margin: 14px auto 4px;
+  width: min(360px, 80%);
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ailav-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* À la carte — row layout: text left, price right, optional image below */
+.ailav-menu-alacarte .ailav-menu-body {
+  text-align: left;
+}
+
+.ailav-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "text price" "image image";
+  gap: 8px 24px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--menu-fg) 15%, transparent);
+}
+
+.ailav-row:last-child {
+  border-bottom: none;
+}
+
+.ailav-row-text {
+  grid-area: text;
+}
+
+.ailav-row-text .ailav-item-zh,
+.ailav-row-text .ailav-item-en {
+  text-align: left;
+}
+
+.ailav-row-price {
+  grid-area: price;
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  align-self: center;
+  color: var(--menu-accent);
+}
+
+.ailav-row-image {
+  grid-area: image;
+  margin-top: 12px;
+  width: min(280px, 60%);
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ailav-row-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Footer (subtitle + footnote) */
+.ailav-menu-foot {
+  margin-top: clamp(48px, 7vw, 80px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ailav-menu-foot .ailav-menu-subtitle {
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-style: normal;
+  font-family: var(--font-cormorant), var(--serif);
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+}
+
+.ailav-menu-footnote {
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* /menu page wrapper */
+.ailav-menu-page {
+  background: var(--bg2);
+  padding: clamp(120px, 16vw, 200px) var(--gutter) clamp(80px, 12vw, 140px);
+}
+
+.ailav-menu-page-head {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto clamp(48px, 8vw, 96px);
+}
+
+.ailav-menu-page-eyebrow {
+  display: block;
+  font-size: clamp(.7rem, .9vw, .8rem);
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 16px;
+}
+
+.ailav-menu-page-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  line-height: 1.3;
+  margin: 0 0 14px;
+}
+
+.ailav-menu-page-sub {
+  color: var(--fg2);
+  font-size: clamp(.9rem, 1.1vw, 1rem);
+  line-height: 1.8;
+  margin: 0 0 24px;
+}
+
+.ailav-menu-page-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ailav-menu-page-btn {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: .78rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  padding: 12px 32px;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  text-decoration: none;
+  transition: background .25s, color .25s;
+}
+
+.ailav-menu-page-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.ailav-menu-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 7vw, 96px);
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* /menu/print — strip everything visible except the menus */
+.ailav-print-page {
+  background: #fff;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.ailav-print-bar {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e5e3de;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -24px -24px 24px;
+  z-index: 10;
+  font-size: .88rem;
+  color: #555;
+}
+
+.ailav-print-bar kbd {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: .8rem;
+  padding: 2px 6px;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: #f7f6f2;
+}
+
+.ailav-print-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+@media print {
+  .ailav-print-bar {
+    display: none;
+  }
+  .ailav-print-page {
+    padding: 0;
+  }
+  .ailav-print-stack {
+    gap: 0;
+  }
+}
+
+/* Homepage menu teaser cards (link to /menu) */
+.ailav-teaser {
+  position: relative;
+  padding: 36px 32px;
+  border-radius: 8px;
+  text-align: left;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 240px;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+
+.ailav-teaser:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.ailav-teaser-eyebrow {
+  font-family: var(--font-cormorant), var(--serif);
+  font-size: .72rem;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  opacity: .8;
+}
+
+.ailav-teaser-title {
+  font-family: var(--font-noto-serif-tc), var(--serif);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.06em;
+}
+
+.ailav-teaser-sub {
+  font-family: var(--font-cormorant), var(--serif);
+  font-style: italic;
+  font-size: clamp(.95rem, 1.25vw, 1.1rem);
+  margin: 0;
+  opacity: .9;
+}
+
+.ailav-teaser-meta {
+  margin-top: auto;
+  font-family: var(--font-cormorant), var(--serif);
+  font-size: .85rem;
+  letter-spacing: .12em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ailav-teaser-meta::after {
+  content: '→';
+  transition: transform .35s var(--ease);
+}
+
+.ailav-teaser:hover .ailav-teaser-meta::after {
+  transform: translateX(6px);
+}
+
+/* Print mode — strip all chrome, keep only the menu cards */
+@media print {
+  .ailav-menu-frame {
+    box-shadow: none;
+    border-radius: 0;
+    padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 60px);
+    page-break-after: always;
+    break-after: page;
+  }
+  .ailav-menu-frame:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  .ailav-item-image,
+  .ailav-row-image {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }
 
 /* Reduced motion */

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import FocalImage from '@/components/common/FocalImage';
 import type { Concept } from '@/lib/content/types';
 
 function renderParagraph(text: string, key: number, delay: number) {
@@ -39,10 +39,9 @@ export default function ConceptSection({ concept }: { concept: Concept }) {
           {concept.paragraphs.map((p, i) => renderParagraph(p, i, i + 2))}
         </div>
         <div className="concept-img img-rv rv relative aspect-[3/4]">
-          <Image
-            className="object-cover"
-            src={concept.image}
-            alt="AILAV 概念意象"
+          <FocalImage
+            asset={concept.image}
+            fallbackAlt="AILAV 概念意象"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
           />

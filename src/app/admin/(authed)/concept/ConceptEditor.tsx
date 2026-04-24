@@ -4,8 +4,14 @@ import type { Concept } from '@/lib/content/types';
 import { updateConcept } from '@/app/actions/content';
 import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
-import ImageUpload from '@/components/admin/ImageUpload';
+import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import type { ImageAsset } from '@/lib/content/image';
+
+const CONCEPT_PREVIEWS = [
+  { label: '桌機 3:4', ratio: 3 / 4 },
+  { label: '手機 全寬', ratio: 4 / 5 },
+];
 
 export default function ConceptEditor({ initial }: { initial: Concept }) {
   const { value, update, status, error, onSubmit } = useEditorForm<Concept>(
@@ -84,10 +90,11 @@ export default function ConceptEditor({ initial }: { initial: Concept }) {
         <div className="adm-card-head">
           <h3>主視覺圖片</h3>
         </div>
-        <ImageUpload
+        <ImageAssetField
           value={value.image}
-          onChange={(url) => update((v) => ({ ...v, image: url }))}
-          aspect="3 / 4"
+          onChange={(asset: ImageAsset) => update((v) => ({ ...v, image: asset }))}
+          uploadAspect="3 / 4"
+          previewAspects={CONCEPT_PREVIEWS}
           hint="建議直向構圖（3:4）；展示於 Concept 區塊右側"
         />
       </div>

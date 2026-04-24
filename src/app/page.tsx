@@ -6,6 +6,7 @@ import MarqueeSection from '@/components/sections/MarqueeSection';
 import ChefSection from '@/components/sections/ChefSection';
 import ManifestoSection from '@/components/sections/ManifestoSection';
 import MenuSection from '@/components/sections/MenuSection';
+import MenuCardsSection from '@/components/sections/MenuCardsSection';
 import ReservationSection from '@/components/sections/ReservationSection';
 import Loader from '@/components/ui/Loader';
 import ScrollProgress from '@/components/ui/ScrollProgress';
@@ -46,6 +47,7 @@ export default async function HomePage() {
         <ChefSection chefs={content.chefs} />
         <ManifestoSection manifesto={content.manifesto} />
         <MenuSection items={content.menu} />
+        <MenuCardsSection cards={content.menuCards} />
         <ReservationSection restaurant={content.restaurant} />
       </main>
 
