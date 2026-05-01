@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-
-const SITE_URL = 'https://ailav.com';
+import { SITE_URL } from '@/lib/constants';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // lastModified bumped each release; admin-driven content changes are

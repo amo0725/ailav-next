@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter, Noto_Serif_TC } from 'next/font/google';
 import Script from 'next/script';
 import { getContent } from '@/lib/content';
 import type { MenuCard, MenuItem } from '@/lib/content/types';
+import { SITE_URL } from '@/lib/constants';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -32,7 +33,6 @@ const inter = Inter({
 });
 
 /* ── SEO Metadata ── */
-const SITE_URL = 'https://ailav.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
