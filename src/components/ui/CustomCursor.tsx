@@ -59,11 +59,17 @@ export default function CustomCursor() {
     document.addEventListener('mouseover', onMouseOver);
     document.addEventListener('mouseout', onMouseOut);
 
+    // Flag for CSS to hide the native OS cursor only on pages where the
+    // custom dot is actually rendered (i.e. not /admin). Removed on
+    // unmount so the OS cursor returns automatically.
+    document.body.dataset.cursorCustom = 'true';
+
     return () => {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseover', onMouseOver);
       document.removeEventListener('mouseout', onMouseOut);
       cancelAnimationFrame(rafId);
+      delete document.body.dataset.cursorCustom;
     };
   }, []);
 

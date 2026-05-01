@@ -241,7 +241,7 @@ export const SEED_CONTENT: Content = {
     },
   ],
   restaurant: {
-    address: '807 高雄市三民區民壯路 43 號',
+    address: '807 高雄市三民區民壯路 39 號',
     lat: 22.639763,
     lng: 120.340723,
     hours: {
@@ -255,5 +255,8 @@ export const SEED_CONTENT: Content = {
     // Empty by default — CTA stays hidden until admin sets a URL in
     // /admin/reservation. Restricted to http(s) at the schema layer.
     reservationUrl: '',
+    // Empty by default — fill via /admin/reservation. Surfaces in JSON-LD
+    // (Restaurant.telephone) and the public ReservationSection when set.
+    telephone: '',
   },
 };

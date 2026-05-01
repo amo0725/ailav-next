@@ -34,6 +34,10 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    /* Reserve scrollbar gutter at all times so opening the nav overlay
+       (which sets overflow:hidden on html/body to lock scroll) does NOT
+       shift page content rightwards by ~17px. */
+    scrollbar-gutter: stable;
   }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
@@ -152,12 +156,17 @@ body {
 .nav-list li:nth-child(2) a{transition-delay:.18s}
 .nav-list li:nth-child(3) a{transition-delay:.28s}
 .nav-list li:nth-child(4) a{transition-delay:.38s}
+/* Underline uses transform:scaleX (compositor-only) instead of animating
+   `width` (layout). The hover letter-spacing change was removed because
+   `letter-spacing` triggers reflow on every transition tick — combined
+   with the nav overlay's full-viewport backdrop-filter it was the main
+   source of cursor-tracking lag while the nav was open. */
 .nav-list a::after {
-  content: ''; position: absolute; bottom: 6px; left: 0; width: 0; height: 1px;
-  background: var(--accent); transition: width .4s var(--ease);
+  content: ''; position: absolute; bottom: 6px; left: 0; width: 100%; height: 1px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+  transition: transform .4s var(--ease);
 }
-.nav-list a:hover::after { width: 100%; }
-.nav-list a:hover { letter-spacing: .16em; }
+.nav-list a:hover::after { transform: scaleX(1); }
 
 /* Hero image overlay (::after can't be Tailwind) */
 .hero-img-wrap::after {
@@ -305,12 +314,71 @@ body {
 /* Scroll progress */
 .scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 200; width: 0; opacity: .6; }
 
-/* Custom cursor */
+/* Custom cursor.
+   `mix-blend-mode: difference` was removed in 2026-05 — when applied to a
+   position:fixed element over a complex page, every cursor frame forces
+   the whole viewport's stacking context to re-composite, which made
+   desktop scrolling feel laggy. The accent fill is high-contrast on the
+   site's neutral palette, so the dot is still visible without it.
+
+   Hidden while the nav overlay is open — the cursor sits above the
+   overlay's backdrop-filter, and its per-frame repaints would otherwise
+   force the underlying blur to re-evaluate, producing visible jank. */
 @media(hover:hover) and (pointer:fine) {
   .cur { width:8px; height:8px; background:var(--accent); border-radius:50%; position:fixed;
-    top:0; left:0; pointer-events:none; z-index:9998; mix-blend-mode:difference;
-    transition:width .3s,height .3s,background .3s; will-change:transform; }
+    top:0; left:0; pointer-events:none; z-index:9998;
+    transition:width .3s,height .3s,background .3s; will-change:transform;
+    transform: translate3d(0,0,0); }
   .cur.big { width:48px; height:48px; background:rgba(139,115,85,.12); border:1px solid var(--accent); }
+  /* Hide the native OS cursor only while the custom dot is mounted
+     (CustomCursor sets body[data-cursor-custom] on mount, removes on
+     unmount). Scoping by data attribute keeps the cursor visible on
+     /admin and any other route that doesn't render the custom dot. */
+  body[data-cursor-custom],
+  body[data-cursor-custom] * {
+    cursor: none !important;
+  }
+}
+
+/* Pause every infinite animation while the nav overlay is up — the
+   nav-ov uses a full-viewport backdrop-filter, and any animation
+   underneath (marquee, shimmer, scroll-pulse) forces the blur to
+   recompute every frame even though you can't see the source through
+   the blur. Pausing them eliminates the unseen GPU cost. */
+body[data-nav-open] .marq-row,
+body[data-nav-open] .cta-shimmer::after,
+body[data-nav-open] .animate-pulse,
+body[data-nav-open] .loader-svg path {
+  animation-play-state: paused !important;
+}
+
+/* `content-visibility: auto` lets the browser skip layout, paint, and
+   compositing for sections that are off-screen — the single biggest
+   modern lever for scroll perf on long pages. `contain-intrinsic-size`
+   gives the layout engine a placeholder size so the scrollbar doesn't
+   jump as sections enter/leave the viewport. (Chrome/Edge ≥85,
+   Firefox ≥125, Safari ≥18 — full 2026 baseline.) */
+#concept,
+#chef,
+#menu,
+#reserve,
+#manifesto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* WCAG 2.2 AA + perf: collapse all animations / transitions for users
+   who request reduced motion. Browsers ship the media query but not the
+   site-wide enforcement — this is the recommended global fallback. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── Missing state/functional classes ── */
