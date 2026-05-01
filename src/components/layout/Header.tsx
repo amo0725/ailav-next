@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { NAV_LINKS, SOCIAL } from '@/lib/constants';
+import { NAV_LINKS } from '@/lib/constants';
+import type { Social } from '@/lib/content/types';
 import { useScrollListener } from '@/hooks/useScrollListener';
 
-export default function Header() {
+export default function Header({ social }: { social: Social }) {
   const [navOpen, setNavOpen] = useState(false);
   const [hdrClass, setHdrClass] = useState('hdr inv');
   const [isDark, setIsDark] = useState(false);
@@ -177,12 +178,16 @@ export default function Header() {
           ))}
         </ul>
         <div className="nav-foot absolute bottom-10 flex gap-7 text-[.65rem] tracking-[.2em] uppercase text-[var(--fg3)]">
-          <a href={SOCIAL.instagram} target="_blank" rel="noopener" className="hover:text-[var(--fg)]">
-            Instagram
-          </a>
-          <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--fg)]">
-            Facebook
-          </a>
+          {social.instagram && (
+            <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--fg)]">
+              Instagram
+            </a>
+          )}
+          {social.facebook && (
+            <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--fg)]">
+              Facebook
+            </a>
+          )}
           <a href="#" className="hover:text-[var(--fg)]">EN / 中</a>
         </div>
       </nav>

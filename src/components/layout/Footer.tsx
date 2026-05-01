@@ -1,9 +1,16 @@
-import { NAV_LINKS, SOCIAL } from '@/lib/constants';
+import { NAV_LINKS } from '@/lib/constants';
+import type { Social } from '@/lib/content/types';
 
 const LINK_CLASS = 'relative text-[.7rem] tracking-[.22em] uppercase text-[var(--fg3)] transition-colors duration-300 hover:text-[var(--fg)]';
 const SOCIAL_BTN = 'w-9 h-9 flex items-center justify-center border border-[rgba(0,0,0,.08)] rounded-full text-[var(--fg3)] transition-all duration-300 hover:bg-[var(--fg)] hover:text-[var(--bg)] hover:border-[var(--fg)]';
 
-export default function Footer({ tagline }: { tagline: string }) {
+type Props = {
+  tagline: string;
+  social: Social;
+};
+
+export default function Footer({ tagline, social }: Props) {
+  const hasSocial = Boolean(social.instagram || social.facebook);
   return (
     <footer className="relative z-[6] bg-[var(--bg)] px-[var(--gutter)] pt-[clamp(60px,8vw,100px)] pb-[clamp(32px,4vw,48px)]">
       <div className="mx-auto max-w-[var(--max)] flex flex-col items-center text-center gap-8">
@@ -25,20 +32,26 @@ export default function Footer({ tagline }: { tagline: string }) {
             </li>
           ))}
         </ul>
-        <div className="foot-social flex gap-3.5">
-          <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={SOCIAL_BTN}>
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" />
-            </svg>
-          </a>
-          <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={SOCIAL_BTN}>
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-            </svg>
-          </a>
-        </div>
+        {hasSocial && (
+          <div className="foot-social flex gap-3.5">
+            {social.instagram && (
+              <a href={social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={SOCIAL_BTN}>
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" />
+                </svg>
+              </a>
+            )}
+            {social.facebook && (
+              <a href={social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={SOCIAL_BTN}>
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
+              </a>
+            )}
+          </div>
+        )}
         <div className="foot-copy text-[.68rem] text-[var(--fg3)] tracking-[.1em] flex gap-4 flex-wrap justify-center">
-          <span>&copy; {new Date().getFullYear()} AILAV</span>
+          <span>&copy; {2026} AILAV</span>
           <span>Privacy Policy</span>
         </div>
       </div>

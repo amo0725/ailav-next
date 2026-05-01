@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
 import { getSession } from '@/lib/auth/session';
 import { sniffImage } from '@/lib/storage/sniff-image';
+import { imageRepository } from '@/lib/storage/image-repository';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -11,7 +11,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  if (
+    process.env.USE_LOCAL_BLOB !== 'true' &&
+    !process.env.BLOB_READ_WRITE_TOKEN
+  ) {
     return NextResponse.json(
       { error: 'Blob storage not configured (missing BLOB_READ_WRITE_TOKEN)' },
       { status: 500 }
@@ -40,18 +43,16 @@ export async function POST(request: Request) {
     );
   }
 
-  // Pathname is built exclusively from sniffed type + random token.
-  // The client-provided filename is never reflected into the stored path.
-  const token = crypto.randomUUID();
-  const pathname = `uploads/${Date.now()}-${token}.${sniffed.extension}`;
-
+  // Pathname is built exclusively from sniffed type + random token by the
+  // image repository. The client-provided filename is never reflected into
+  // the stored path.
   try {
-    const blob = await put(pathname, buffer, {
-      access: 'public',
-      contentType: sniffed.mime,
-      cacheControlMaxAge: 60 * 60 * 24 * 365,
-    });
-    return NextResponse.json({ url: blob.url });
+    const { url } = await imageRepository.upload(
+      buffer,
+      sniffed.mime,
+      sniffed.extension
+    );
+    return NextResponse.json({ url });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : 'Upload failed' },

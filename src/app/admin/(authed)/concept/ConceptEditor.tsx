@@ -6,6 +6,7 @@ import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 import type { ImageAsset } from '@/lib/content/image';
 
 const CONCEPT_PREVIEWS = [
@@ -18,6 +19,7 @@ export default function ConceptEditor({ initial }: { initial: Concept }) {
     initial,
     async (next) => updateConcept(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   function updateParagraph(i: number, text: string) {
     update((v) => ({

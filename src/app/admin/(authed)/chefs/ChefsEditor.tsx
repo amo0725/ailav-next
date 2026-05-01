@@ -5,6 +5,7 @@ import type { Chef } from '@/lib/content/types';
 import { updateChefs } from '@/app/actions/content';
 import SaveBar from '@/components/admin/SaveBar';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 import ChefCard from './ChefCard';
 
 function emptyChef(): Chef {
@@ -23,6 +24,7 @@ export default function ChefsEditor({ initial }: { initial: Chef[] }) {
     initial,
     async (next) => updateChefs(next)
   );
+  useBeforeUnload(status === 'dirty');
   const [openIdx, setOpenIdx] = useState<number | null>(
     initial.length > 0 ? 0 : null
   );

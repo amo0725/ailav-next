@@ -123,14 +123,26 @@ export type Concept = {
   image: ImageInput;
 };
 
+export type Social = {
+  instagram: string;
+  facebook: string;
+};
+
 export type Site = {
   name: string;
   tagline: string;
   subtitle: string;
   description: string;
+  social: Social;
 };
 
 export type Content = {
+  /**
+   * Opaque revision token. Bumped on every saveContent() call so admin
+   * editors can be remounted with `key={content.version}` after a save,
+   * picking up freshly-cached server data instead of stale client state.
+   */
+  version: string;
   site: Site;
   hero: Hero;
   concept: Concept;

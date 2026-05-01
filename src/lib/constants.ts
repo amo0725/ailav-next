@@ -1,12 +1,7 @@
 /* ── Site Constants ── */
-/* Navigation, social, and UI timings. Editable content lives in src/lib/content. */
+/* Navigation and UI timings. Editable content (including social URLs) lives in src/lib/content. */
 
-export const SITE_URL = 'https://ailav.com';
-
-export const SOCIAL = {
-  instagram: 'https://www.instagram.com/ailav_kaohsiung/',
-  facebook: '#',
-} as const;
+export const SITE_URL = 'https://ailav.com.tw';
 
 export const LOADER_DURATION_MS = 3200;
 export const LOADER_FALLBACK_MS = 6000;

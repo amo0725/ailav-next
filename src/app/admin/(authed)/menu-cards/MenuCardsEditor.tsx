@@ -5,6 +5,7 @@ import type { MenuCard } from '@/lib/content/types';
 import { updateMenuCards } from '@/app/actions/content';
 import SaveBar from '@/components/admin/SaveBar';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 import MenuCardEditor from './MenuCardEditor';
 
 type Props = {
@@ -68,6 +69,7 @@ export default function MenuCardsEditor({ initial, seedTemplate }: Props) {
     initial,
     async (next) => updateMenuCards(next)
   );
+  useBeforeUnload(status === 'dirty');
   const [openIdx, setOpenIdx] = useState<number | null>(
     initial.length > 0 ? 0 : null
   );

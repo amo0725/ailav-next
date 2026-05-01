@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
 import { getContent } from '@/lib/content';
+import EditorSkeleton from '@/components/admin/EditorSkeleton';
 import ManifestoEditor from './ManifestoEditor';
 
-export default async function ManifestoPage() {
-  const content = await getContent();
+export default function ManifestoPage() {
   return (
     <>
       <div className="adm-head">
@@ -10,7 +11,14 @@ export default async function ManifestoPage() {
         <h1 className="adm-title">品牌宣言</h1>
         <p className="adm-subtitle">三個詞的三語說明、背景影片與海報圖。</p>
       </div>
-      <ManifestoEditor initial={content.manifesto} />
+      <Suspense fallback={<EditorSkeleton />}>
+        <ManifestoEditorLoader />
+      </Suspense>
     </>
   );
+}
+
+async function ManifestoEditorLoader() {
+  const content = await getContent();
+  return <ManifestoEditor key={content.version} initial={content.manifesto} />;
 }

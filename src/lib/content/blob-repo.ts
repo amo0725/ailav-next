@@ -3,6 +3,7 @@ import type { ContentRepository } from './repository';
 import type { Content } from './types';
 import { ContentSchema } from './schema';
 import { SEED_CONTENT } from './seed';
+import { LocalFsContentRepository } from './fs-repo';
 
 // Immutable content pattern (Vercel-recommended):
 // - Each save writes to a NEW pathname so CDN + browsers never serve stale.
@@ -17,9 +18,12 @@ export class BlobContentRepository implements ContentRepository {
     const latestUrl = await this.resolveLatestUrl();
     if (!latestUrl) return SEED_CONTENT;
 
+    // Tag the fetch with CONTENT_TAG (kept as a literal here to avoid the
+    // index.ts ↔ blob-repo.ts circular import). Cache freshness is now
+    // owned by the `'use cache'` boundary in getContent() — no-store /
+    // Cache-Control: no-cache are obsolete under Cache Components.
     const res = await fetch(latestUrl, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' },
+      next: { tags: ['ailav-content'] },
     });
     if (!res.ok) return SEED_CONTENT;
 
@@ -111,9 +115,13 @@ function migrateLegacyContent(raw: unknown): Record<string, unknown> | null {
   return touched ? obj : null;
 }
 
-let instance: BlobContentRepository | null = null;
+let instance: ContentRepository | null = null;
 
-export function getContentRepository(): BlobContentRepository {
-  if (!instance) instance = new BlobContentRepository();
+export function getContentRepository(): ContentRepository {
+  if (instance) return instance;
+  instance =
+    process.env.USE_LOCAL_BLOB === 'true'
+      ? new LocalFsContentRepository()
+      : new BlobContentRepository();
   return instance;
 }

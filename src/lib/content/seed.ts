@@ -1,12 +1,17 @@
 import type { Content } from './types';
 
 export const SEED_CONTENT: Content = {
+  version: 'seed',
   site: {
     name: 'AILAV',
     tagline: 'Aile · Il a · Voyage',
     subtitle: "A Migratory Chef's Journey of Flavor & Love",
     description:
       "AILAV — Pronounced as 'I Love'. 候鳥的歸徑，跨越日、法、台的風味旅程。高雄精緻餐飲。",
+    social: {
+      instagram: 'https://www.instagram.com/ailav_kaohsiung/',
+      facebook: '',
+    },
   },
   hero: {
     mainImage:

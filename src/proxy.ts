@@ -1,30 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getIronSession } from 'iron-session';
+import {
+  sessionOptions,
+  type AdminSessionData,
+} from '@/lib/auth/session';
 
-const ADMIN_COOKIE = 'ailav_admin';
 const ADMIN_UI_PREFIX = '/admin';
 const ADMIN_API_PREFIX = '/api/admin';
 const ADMIN_LOGIN = '/admin/login';
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  const isAdminUi = pathname.startsWith(ADMIN_UI_PREFIX) && pathname !== ADMIN_LOGIN;
-  const isAdminApi = pathname.startsWith(ADMIN_API_PREFIX);
-
-  if (isAdminUi || isAdminApi) {
-    const cookie = request.cookies.get(ADMIN_COOKIE);
-    if (!cookie?.value) {
-      if (isAdminApi) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-      const loginUrl = new URL(ADMIN_LOGIN, request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  const response = NextResponse.next();
-
+function buildSecurityHeaders(response: NextResponse): NextResponse {
   const isDev = process.env.NODE_ENV !== 'production';
   const scriptSrc = isDev
     ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
@@ -62,8 +48,53 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
+export async function proxy(request: NextRequest): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+
+  const isLogin =
+    pathname === ADMIN_LOGIN || pathname.startsWith(`${ADMIN_LOGIN}/`);
+  const isAdminApi = pathname.startsWith(ADMIN_API_PREFIX);
+  const isAdminUi = pathname.startsWith(ADMIN_UI_PREFIX) && !isLogin;
+
+  if (isLogin || isAdminUi || isAdminApi) {
+    const response = NextResponse.next();
+    // iron-session expects a CookieStore with both get() and set().
+    // Read from the incoming request, mirror writes to the outgoing response
+    // so any session-rotation cookie iron-session sets reaches the client.
+    const cookieStore = {
+      get(name: string) {
+        const c = request.cookies.get(name);
+        return c ? { name: c.name, value: c.value } : undefined;
+      },
+      set(...args: Parameters<typeof response.cookies.set>) {
+        response.cookies.set(...args);
+      },
+    };
+    const session = await getIronSession<AdminSessionData>(
+      cookieStore,
+      sessionOptions()
+    );
+
+    if (isLogin) {
+      if (session.authenticated) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+      return buildSecurityHeaders(response);
+    }
+
+    if (!session.authenticated) {
+      if (isAdminApi) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      return NextResponse.redirect(new URL(ADMIN_LOGIN, request.url));
+    }
+
+    return buildSecurityHeaders(response);
+  }
+
+  return buildSecurityHeaders(NextResponse.next());
+}
+
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };
