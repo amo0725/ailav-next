@@ -3,6 +3,7 @@ import type { ContentRepository } from './repository';
 import type { Content } from './types';
 import { ContentSchema } from './schema';
 import { SEED_CONTENT } from './seed';
+import { LocalFsContentRepository } from './fs-repo';
 
 // Immutable content pattern (Vercel-recommended):
 // - Each save writes to a NEW pathname so CDN + browsers never serve stale.
@@ -111,9 +112,13 @@ function migrateLegacyContent(raw: unknown): Record<string, unknown> | null {
   return touched ? obj : null;
 }
 
-let instance: BlobContentRepository | null = null;
+let instance: ContentRepository | null = null;
 
-export function getContentRepository(): BlobContentRepository {
-  if (!instance) instance = new BlobContentRepository();
+export function getContentRepository(): ContentRepository {
+  if (instance) return instance;
+  instance =
+    process.env.USE_LOCAL_BLOB === 'true'
+      ? new LocalFsContentRepository()
+      : new BlobContentRepository();
   return instance;
 }

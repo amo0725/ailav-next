@@ -37,6 +37,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local-only content/image storage (USE_LOCAL_BLOB=true)
+.data/
+public/uploads/
+
 # claude code agent workspace
 .claude/
 
