@@ -49,6 +49,38 @@ export default function SiteEditor({ initial }: { initial: Site }) {
             rows={3}
           />
         </Field>
+        <Field
+          label="Instagram 網址"
+          htmlFor="ig"
+          hint="留空則公開頁不顯示 IG 圖示。需 http:// 或 https:// 開頭的完整網址。"
+        >
+          <input
+            id="ig"
+            type="url"
+            inputMode="url"
+            placeholder="https://www.instagram.com/your_handle/"
+            value={value.social.instagram}
+            onChange={(e) =>
+              update((v) => ({ ...v, social: { ...v.social, instagram: e.target.value } }))
+            }
+          />
+        </Field>
+        <Field
+          label="Facebook 網址"
+          htmlFor="fb"
+          hint="留空則公開頁不顯示 FB 圖示。需 http:// 或 https:// 開頭的完整網址。"
+        >
+          <input
+            id="fb"
+            type="url"
+            inputMode="url"
+            placeholder="https://www.facebook.com/yourpage"
+            value={value.social.facebook}
+            onChange={(e) =>
+              update((v) => ({ ...v, social: { ...v.social, facebook: e.target.value } }))
+            }
+          />
+        </Field>
       </div>
       <SaveBar status={status} error={error} />
     </form>

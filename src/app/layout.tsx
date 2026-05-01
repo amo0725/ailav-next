@@ -156,7 +156,11 @@ function buildMenuLd(menu: MenuItem[], cards: MenuCard[]) {
   };
 }
 
-function buildJsonLd(menu: MenuItem[], cards: MenuCard[]) {
+function buildJsonLd(
+  menu: MenuItem[],
+  cards: MenuCard[],
+  social: { instagram: string; facebook: string }
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
@@ -194,7 +198,7 @@ function buildJsonLd(menu: MenuItem[], cards: MenuCard[]) {
         closes: '22:30',
       },
     ],
-    sameAs: ['https://www.instagram.com/ailav_kaohsiung/'],
+    sameAs: [social.instagram, social.facebook].filter(Boolean),
     hasMenu: buildMenuLd(menu, cards),
   };
 }
@@ -205,7 +209,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const content = await getContent();
-  const jsonLd = buildJsonLd(content.menu, content.menuCards);
+  const jsonLd = buildJsonLd(content.menu, content.menuCards, content.site.social);
   // Escape `<` so admin-supplied content (menu names, dish titles) cannot
   // break out of the inline <script> tag with `</script><script>…`.
   // < parses back to `<` for any JSON-LD consumer — structured data

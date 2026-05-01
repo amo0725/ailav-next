@@ -37,7 +37,7 @@ export default async function HomePage() {
       <GlobalEffects />
 
       {/* Header + Navigation */}
-      <Header />
+      <Header social={content.site.social} />
 
       {/* Main Content */}
       <main id="main">
@@ -52,7 +52,7 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <Footer tagline={content.site.tagline} />
+      <Footer tagline={content.site.tagline} social={content.site.social} />
 
       {/* Floating UI */}
       <AccessibilityPanel />

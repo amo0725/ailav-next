@@ -178,11 +178,33 @@ export const ConceptSchema = z.object({
   image: ImageAssetSchema,
 });
 
+// Reuses isAllowedReservationUrl as a generic http(s)-only guard. The helper
+// name is historical; the logic (no javascript:/data: schemes) applies equally
+// to any admin-supplied URL we render into <a href>.
+const SocialUrl = z.union([
+  z.literal(''),
+  z
+    .string()
+    .url()
+    .max(500)
+    .refine(isAllowedReservationUrl, {
+      message: '只接受 http:// 或 https:// 網址',
+    }),
+]);
+
+export const SocialSchema = z.object({
+  instagram: SocialUrl.default(''),
+  facebook: SocialUrl.default(''),
+});
+
 export const SiteSchema = z.object({
   name: z.string().min(1).max(40),
   tagline: z.string().min(1).max(80),
   subtitle: z.string().min(1).max(120),
   description: z.string().min(1).max(400),
+  // Tolerate older blobs that predate the social field — `.default()` injects
+  // empty strings on read so consumers always see a Social object.
+  social: SocialSchema.default({ instagram: '', facebook: '' }),
 });
 
 export const ContentSchema = z.object({

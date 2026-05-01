@@ -16,7 +16,7 @@ export default async function MenuIndexPage() {
 
   return (
     <>
-      <Header />
+      <Header social={content.site.social} />
       <main id="main" className="ailav-menu-page">
         <div className="ailav-menu-page-head">
           <span className="ailav-menu-page-eyebrow">Menu</span>
@@ -45,7 +45,7 @@ export default async function MenuIndexPage() {
           </div>
         )}
       </main>
-      <Footer tagline={content.site.tagline} />
+      <Footer tagline={content.site.tagline} social={content.site.social} />
     </>
   );
 }

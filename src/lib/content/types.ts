@@ -123,11 +123,17 @@ export type Concept = {
   image: ImageInput;
 };
 
+export type Social = {
+  instagram: string;
+  facebook: string;
+};
+
 export type Site = {
   name: string;
   tagline: string;
   subtitle: string;
   description: string;
+  social: Social;
 };
 
 export type Content = {
