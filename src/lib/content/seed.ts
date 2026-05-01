@@ -1,6 +1,7 @@
 import type { Content } from './types';
 
 export const SEED_CONTENT: Content = {
+  version: 'seed',
   site: {
     name: 'AILAV',
     tagline: 'Aile · Il a · Voyage',

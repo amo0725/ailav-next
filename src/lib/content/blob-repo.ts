@@ -18,9 +18,12 @@ export class BlobContentRepository implements ContentRepository {
     const latestUrl = await this.resolveLatestUrl();
     if (!latestUrl) return SEED_CONTENT;
 
+    // Tag the fetch with CONTENT_TAG (kept as a literal here to avoid the
+    // index.ts ↔ blob-repo.ts circular import). Cache freshness is now
+    // owned by the `'use cache'` boundary in getContent() — no-store /
+    // Cache-Control: no-cache are obsolete under Cache Components.
     const res = await fetch(latestUrl, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' },
+      next: { tags: ['ailav-content'] },
     });
     if (!res.ok) return SEED_CONTENT;
 

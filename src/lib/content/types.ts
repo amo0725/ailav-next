@@ -131,6 +131,12 @@ export type Site = {
 };
 
 export type Content = {
+  /**
+   * Opaque revision token. Bumped on every saveContent() call so admin
+   * editors can be remounted with `key={content.version}` after a save,
+   * picking up freshly-cached server data instead of stale client state.
+   */
+  version: string;
   site: Site;
   hero: Hero;
   concept: Concept;

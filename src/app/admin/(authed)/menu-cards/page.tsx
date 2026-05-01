@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
 import { getContent, SEED_CONTENT } from '@/lib/content';
+import EditorSkeleton from '@/components/admin/EditorSkeleton';
 import MenuCardsEditor from './MenuCardsEditor';
 
-export default async function MenuCardsPage() {
-  const content = await getContent();
+export default function MenuCardsPage() {
   return (
     <>
       <div className="adm-head">
@@ -13,10 +14,20 @@ export default async function MenuCardsPage() {
           每張可獨立設定主題色、是否分組（tasting）或單點（à la carte），並可附上盤式照片。
         </p>
       </div>
-      <MenuCardsEditor
-        initial={[...content.menuCards]}
-        seedTemplate={SEED_CONTENT.menuCards}
-      />
+      <Suspense fallback={<EditorSkeleton />}>
+        <MenuCardsEditorLoader />
+      </Suspense>
     </>
+  );
+}
+
+async function MenuCardsEditorLoader() {
+  const content = await getContent();
+  return (
+    <MenuCardsEditor
+      key={content.version}
+      initial={[...content.menuCards]}
+      seedTemplate={SEED_CONTENT.menuCards}
+    />
   );
 }

@@ -186,6 +186,10 @@ export const SiteSchema = z.object({
 });
 
 export const ContentSchema = z.object({
+  // Tolerate legacy blobs that predate the version field. .default() runs
+  // when the input is undefined and produces a non-optional output type so
+  // callers always see a string. Saves explicitly bump version anyway.
+  version: z.string().default(() => crypto.randomUUID()),
   site: SiteSchema,
   hero: HeroSchema,
   concept: ConceptSchema,

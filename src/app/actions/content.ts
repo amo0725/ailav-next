@@ -1,6 +1,7 @@
 'use server';
 
 import { z } from 'zod';
+import { updateTag } from 'next/cache';
 import {
   ChefSchema,
   ConceptSchema,
@@ -11,7 +12,7 @@ import {
   RestaurantSchema,
   SiteSchema,
 } from '@/lib/content/schema';
-import { getContent, saveContent } from '@/lib/content';
+import { CONTENT_TAG, getContent, saveContent } from '@/lib/content';
 import { requireAuthenticated } from '@/lib/auth/session';
 import type { Content } from '@/lib/content/types';
 
@@ -39,6 +40,9 @@ async function patch<K extends keyof Content>(
     const current = await getContent();
     const next: Content = { ...current, [key]: parsed.data };
     await saveContent(next);
+    // Invalidate the public + admin content cache so the very next render
+    // sees fresh data (Next.js 16 read-your-own-writes).
+    updateTag(CONTENT_TAG);
     return { ok: true };
   } catch (e) {
     return { error: e instanceof Error ? e.message : '儲存失敗' };

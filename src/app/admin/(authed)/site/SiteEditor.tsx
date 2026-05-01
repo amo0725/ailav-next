@@ -5,12 +5,14 @@ import { updateSite } from '@/app/actions/content';
 import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 
 export default function SiteEditor({ initial }: { initial: Site }) {
   const { value, update, status, error, onSubmit } = useEditorForm<Site>(
     initial,
     async (next) => updateSite(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   return (
     <form onSubmit={onSubmit}>

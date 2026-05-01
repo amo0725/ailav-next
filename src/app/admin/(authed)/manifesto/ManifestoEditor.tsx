@@ -6,6 +6,7 @@ import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 import type { ImageAsset } from '@/lib/content/image';
 
 const POSTER_PREVIEWS = [
@@ -19,6 +20,7 @@ export default function ManifestoEditor({ initial }: { initial: Manifesto }) {
     initial,
     async (next) => updateManifesto(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   function patchWord(i: number, p: Partial<ManifestoWord>) {
     update((v) => ({

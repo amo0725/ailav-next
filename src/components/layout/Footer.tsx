@@ -38,7 +38,7 @@ export default function Footer({ tagline }: { tagline: string }) {
           </a>
         </div>
         <div className="foot-copy text-[.68rem] text-[var(--fg3)] tracking-[.1em] flex gap-4 flex-wrap justify-center">
-          <span>&copy; {new Date().getFullYear()} AILAV</span>
+          <span>&copy; {2026} AILAV</span>
           <span>Privacy Policy</span>
         </div>
       </div>
