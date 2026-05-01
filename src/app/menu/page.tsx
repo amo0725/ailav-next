@@ -4,18 +4,35 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import MenuRenderer from '@/components/menu/MenuRenderer';
 import { getContent } from '@/lib/content';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: 'Menu — AILAV',
-  description: 'AILAV 當季套餐與宵夜時段菜單。',
+  title: '菜單',
+  description:
+    'AILAV 高雄精緻餐廳當季菜單。品味套餐 NT$990 / 主食套餐之夜 / 深夜 Wine Bar 單點。融合台、法、日風味的當代創作料理，位於高雄三民區民壯路。可一鍵列印或儲存 PDF。',
+  alternates: { canonical: '/menu' },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首頁', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: '菜單', item: `${SITE_URL}/menu` },
+  ],
 };
 
 export default async function MenuIndexPage() {
   const content = await getContent();
   const cards = content.menuCards;
+  const breadcrumbSafe = JSON.stringify(breadcrumbJsonLd).replace(/</g, '\\u003c');
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: breadcrumbSafe }}
+      />
       <Header social={content.site.social} />
       <main id="main" className="ailav-menu-page">
         <div className="ailav-menu-page-head">

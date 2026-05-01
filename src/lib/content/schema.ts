@@ -143,6 +143,21 @@ export const RestaurantSchema = z.object({
         }),
     ])
     .optional(),
+  // Public phone. Empty string OR safe printable chars only. The character
+  // whitelist prevents injection when the value is rendered into
+  // <a href="tel:..."> and the JSON-LD telephone field.
+  telephone: z
+    .union([
+      z.literal(''),
+      z
+        .string()
+        .min(1)
+        .max(40)
+        .regex(/^[+0-9\s().-]+$/, {
+          message: '電話僅允許數字、空白與 + - ( ) . 字元',
+        }),
+    ])
+    .optional(),
 });
 
 export const HeroScatterImageSchema = z.object({

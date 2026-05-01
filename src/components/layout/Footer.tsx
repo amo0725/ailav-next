@@ -1,8 +1,14 @@
+import Link from 'next/link';
 import { NAV_LINKS } from '@/lib/constants';
 import type { Social } from '@/lib/content/types';
 
 const LINK_CLASS = 'relative text-[.7rem] tracking-[.22em] uppercase text-[var(--fg3)] transition-colors duration-300 hover:text-[var(--fg)]';
 const SOCIAL_BTN = 'w-9 h-9 flex items-center justify-center border border-[rgba(0,0,0,.08)] rounded-full text-[var(--fg3)] transition-all duration-300 hover:bg-[var(--fg)] hover:text-[var(--bg)] hover:border-[var(--fg)]';
+
+// Resolve once at module load (build / cold start) so the JSX render is a
+// pure function of props — required by Next 16 Cache Components, which
+// blocks `new Date()` inside server-rendered output.
+const COPYRIGHT_YEAR = new Date().getFullYear();
 
 type Props = {
   tagline: string;
@@ -31,6 +37,11 @@ export default function Footer({ tagline, social }: Props) {
               <a href={link.href} className={LINK_CLASS}>{link.en}</a>
             </li>
           ))}
+          {/* Direct link to the standalone /menu page so it accumulates
+              internal PageRank instead of relying on hash-only nav. */}
+          <li>
+            <Link href="/menu" className={LINK_CLASS}>Menu Page</Link>
+          </li>
         </ul>
         {hasSocial && (
           <div className="foot-social flex gap-3.5">
@@ -51,7 +62,7 @@ export default function Footer({ tagline, social }: Props) {
           </div>
         )}
         <div className="foot-copy text-[.68rem] text-[var(--fg3)] tracking-[.1em] flex gap-4 flex-wrap justify-center">
-          <span>&copy; {2026} AILAV</span>
+          <span>&copy; {COPYRIGHT_YEAR} AILAV</span>
           <span>Privacy Policy</span>
         </div>
       </div>

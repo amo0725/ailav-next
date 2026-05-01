@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import FocalImage from '@/components/common/FocalImage';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import type { Hero } from '@/lib/content/types';
@@ -15,8 +15,22 @@ export default function HeroSection({ hero }: { hero: Hero }) {
   const heroScrollRef = useRef<HTMLDivElement>(null);
   const heroPhiloRef = useRef<HTMLDivElement>(null);
 
+  /* ── Set initial hidden state synchronously before browser paint ──
+   * SSR HTML keeps the H1 visible so crawlers index it; on the client,
+   * useLayoutEffect fires before the first paint and hides the title
+   * for the loader-driven reveal animation. No flash for JS users.
+   * Skipped under prefers-reduced-motion so the H1 stays visible. */
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = document.querySelector('.hero-t') as HTMLElement | null;
+    const s = document.querySelector('.hero-st') as HTMLElement | null;
+    if (t) gsap.set(t, { opacity: 0, y: 30 });
+    if (s) gsap.set(s, { opacity: 0, y: 15 });
+  }, []);
+
   /* ── Hero title reveal after loader (3200ms) ── */
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = setTimeout(() => {
       const t = document.querySelector('.hero-t') as HTMLElement | null;
       const s = document.querySelector('.hero-st') as HTMLElement | null;
@@ -84,8 +98,10 @@ export default function HeroSection({ hero }: { hero: Hero }) {
           const tR = isMobile ? vw * 0.06 : vw * 0.22;
           const tB = isMobile ? vh * 0.12 : vh * 0.30;
 
-          heroImg.style.inset = `${tT * ease}px ${tR * ease}px ${tB * ease}px ${tL * ease}px`;
-          heroImg.style.borderRadius = `${6 * ease}px`;
+          // clip-path is composited entirely on the GPU — no layout, no paint
+          // on the document. Animating `inset` here was the main scroll-jank
+          // source on desktop (every frame triggered a full reflow).
+          heroImg.style.clipPath = `inset(${tT * ease}px ${tR * ease}px ${tB * ease}px ${tL * ease}px round ${6 * ease}px)`;
           heroImg.style.setProperty('--grad', String(1 - ease));
 
           if (heroOv) {
@@ -116,7 +132,7 @@ export default function HeroSection({ hero }: { hero: Hero }) {
         ref={heroPinRef}
       >
         <div
-          className="hero-img-wrap absolute inset-0 overflow-hidden will-change-[inset,border-radius]"
+          className="hero-img-wrap absolute inset-0 overflow-hidden will-change-[clip-path] [transform:translateZ(0)]"
           id="heroImg"
           ref={heroImgRef}
         >
@@ -134,12 +150,12 @@ export default function HeroSection({ hero }: { hero: Hero }) {
           id="heroOv"
           ref={heroOvRef}
         >
-          <h1 className="hero-t [font-family:var(--serif)] text-[clamp(3rem,8.5vw,7.5rem)] font-light tracking-[.22em] leading-none opacity-0 [transform:translateY(30px)]"
+          <h1 className="hero-t [font-family:var(--serif)] text-[clamp(3rem,8.5vw,7.5rem)] font-light tracking-[.22em] leading-none"
             style={{ textShadow: '0 2px 30px rgba(0,0,0,.4), 0 0px 80px rgba(0,0,0,.2)' }}
           >
             AILAV
           </h1>
-          <p className="hero-st [font-family:var(--serif)] text-[clamp(.75rem,1.3vw,.9rem)] tracking-[.5em] uppercase mt-[18px] opacity-0 [transform:translateY(15px)] text-white/75"
+          <p className="hero-st [font-family:var(--serif)] text-[clamp(.75rem,1.3vw,.9rem)] tracking-[.5em] uppercase mt-[18px] text-white/75"
             style={{ textShadow: '0 1px 20px rgba(0,0,0,.5)' }}
           >
             A Migratory Chef&apos;s Journey of Flavor &amp; Love

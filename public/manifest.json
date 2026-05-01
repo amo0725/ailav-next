@@ -24,9 +24,9 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
-  "lang": "zh-Hant",
+  "lang": "zh-Hant-TW",
   "categories": ["food", "restaurants"]
 }

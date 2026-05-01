@@ -89,6 +89,9 @@ export type Restaurant = {
   /** Online reservation CTA target. Empty / missing → CTA is hidden.
    * Validated as http(s) only at the schema layer. */
   reservationUrl?: string;
+  /** Public phone number in E.164 format (e.g. "+886-7-XXX-XXXX").
+   * Empty / missing → phone block hidden on public site and omitted from JSON-LD. */
+  telephone?: string;
 };
 
 export type HeroScatterImage = {

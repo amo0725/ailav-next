@@ -4,7 +4,7 @@ import PrintTrigger from './PrintTrigger';
 import { getContent } from '@/lib/content';
 
 export const metadata: Metadata = {
-  title: 'Menu (Print) — AILAV',
+  title: '菜單列印',
   robots: { index: false, follow: false },
 };
 
@@ -17,7 +17,7 @@ export default async function MenuPrintPage() {
       <PrintTrigger />
       <div className="ailav-print-bar">
         <p>準備好就按 <kbd>Ctrl/⌘ + P</kbd> 列印或儲存 PDF</p>
-        <a href="/menu" className="ailav-menu-page-btn">← 返回</a>
+        <a href="/menu" className="ailav-menu-page-btn">← 返回菜單</a>
       </div>
       <div className="ailav-print-stack">
         {cards.map((card) => (
