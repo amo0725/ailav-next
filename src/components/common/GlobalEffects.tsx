@@ -65,50 +65,104 @@ export default function GlobalEffects() {
         });
       }
 
-      /* ── Liquid Distortion: apply SVG filter on fast scroll ── */
+      /* ── Fast-scroll desaturate: cheap saturate-only swap ──
+         (`url(#liquidDistort)` SVG filter was removed — SVG filters run on
+          CPU and stalled the cursor during heavy scrolls.) */
       if (isDesktop) {
         const liqImgs = document.querySelectorAll<HTMLImageElement>('.concept-img img, .chef-img img');
-
+        let prevActive = false;
         ScrollTrigger.create({
           onUpdate: (self) => {
-            const velocity = Math.abs(self.getVelocity());
-            const active = velocity > 800;
+            const active = Math.abs(self.getVelocity()) > 800;
+            if (active === prevActive) return;
+            prevActive = active;
             liqImgs.forEach((img) => {
-              img.style.filter = active ? 'url(#liquidDistort) saturate(.78)' : '';
+              img.style.filter = active ? 'saturate(.78)' : '';
             });
           },
         });
       }
     });
 
-    /* ── Card tilt + Magnetic hover (non-GSAP, with cleanup) ── */
+    /* ── Card tilt + Magnetic hover ──
+       The previous implementation called getBoundingClientRect() inside
+       every mousemove handler, forcing synchronous layout 60–1000×/sec
+       on gaming mice. Combined with style writes this saturated the main
+       thread and made the custom cursor feel laggy over interactive
+       regions. The new pattern:
+
+         1. Cache rect on `mouseenter`; refresh on resize/scroll.
+         2. mousemove only stores latest pointer coords (no DOM read).
+         3. A single rAF flush per frame writes the transform.
+       Result: ≤1 layout-free style write per element per frame, no matter
+       how often mousemove fires. */
     const cleanups: (() => void)[] = [];
+
+    type HoverFormatter = (dx: number, dy: number, w: number, h: number) => string;
+
+    const attachHover = (el: HTMLElement, format: HoverFormatter) => {
+      let rect = el.getBoundingClientRect();
+      let pendingX = 0;
+      let pendingY = 0;
+      let scheduled = false;
+      let inside = false;
+
+      const flush = () => {
+        scheduled = false;
+        if (!inside) return;
+        const dx = pendingX - rect.left;
+        const dy = pendingY - rect.top;
+        el.style.transform = format(dx, dy, rect.width, rect.height);
+      };
+
+      const onEnter = () => {
+        rect = el.getBoundingClientRect();
+        inside = true;
+      };
+      const onMove = (e: MouseEvent) => {
+        pendingX = e.clientX;
+        pendingY = e.clientY;
+        if (!scheduled) {
+          scheduled = true;
+          requestAnimationFrame(flush);
+        }
+      };
+      const onLeave = () => {
+        inside = false;
+        el.style.transform = '';
+      };
+      const refreshRect = () => { if (inside) rect = el.getBoundingClientRect(); };
+
+      el.addEventListener('mouseenter', onEnter);
+      el.addEventListener('mousemove', onMove);
+      el.addEventListener('mouseleave', onLeave);
+      window.addEventListener('resize', refreshRect, { passive: true });
+      window.addEventListener('scroll', refreshRect, { passive: true });
+
+      cleanups.push(() => {
+        el.removeEventListener('mouseenter', onEnter);
+        el.removeEventListener('mousemove', onMove);
+        el.removeEventListener('mouseleave', onLeave);
+        window.removeEventListener('resize', refreshRect);
+        window.removeEventListener('scroll', refreshRect);
+      });
+    };
 
     if (isDesktop) {
       document.querySelectorAll<HTMLElement>('.mcard').forEach((card) => {
-        const onMove = (e: MouseEvent) => {
-          const r = card.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - 0.5;
-          const y = (e.clientY - r.top) / r.height - 0.5;
-          card.style.transform = `translateY(-4px) perspective(600px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
-        };
-        const onLeave = () => { card.style.transform = ''; };
-        card.addEventListener('mousemove', onMove);
-        card.addEventListener('mouseleave', onLeave);
-        cleanups.push(() => { card.removeEventListener('mousemove', onMove); card.removeEventListener('mouseleave', onLeave); });
+        attachHover(card, (dx, dy, w, h) => {
+          const x = dx / w - 0.5;
+          const y = dy / h - 0.5;
+          return `translateY(-4px) perspective(600px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+        });
       });
 
       document.querySelectorAll<HTMLElement>('.cta, .hdr-res, .a11y-b, .snd, .foot-social a').forEach((el) => {
-        const onMove = (e: MouseEvent) => {
-          const r = el.getBoundingClientRect();
-          const x = (e.clientX - r.left - r.width / 2) * 0.25;
-          const y = (e.clientY - r.top - r.height / 2) * 0.25;
-          el.style.transform = `translate(${x}px, ${y}px)`;
-        };
-        const onLeave = () => { el.style.transform = ''; };
-        el.addEventListener('mousemove', onMove);
-        el.addEventListener('mouseleave', onLeave);
-        cleanups.push(() => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); });
+        attachHover(el, (dx, dy, w, h) => {
+          const x = (dx - w / 2) * 0.25;
+          const y = (dy - h / 2) * 0.25;
+          return `translate(${x}px, ${y}px)`;
+        });
       });
     }
 

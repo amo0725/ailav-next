@@ -42,6 +42,18 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
             onChange={(e) => update((v) => ({ ...v, address: e.target.value }))}
           />
         </Field>
+        <Field
+          label="電話"
+          hint="建議使用 E.164 格式（如 +886-7-123-4567）。留空則公開頁與結構化資料皆隱藏電話。"
+        >
+          <input
+            type="tel"
+            inputMode="tel"
+            placeholder="+886-7-XXX-XXXX"
+            value={value.telephone ?? ''}
+            onChange={(e) => update((v) => ({ ...v, telephone: e.target.value }))}
+          />
+        </Field>
         <div className="adm-grid-2">
           <Field label="緯度 (Latitude)">
             <input

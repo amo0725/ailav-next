@@ -21,9 +21,19 @@ export default function ReservationSection({ restaurant }: { restaurant: Restaur
             預約訂位
           </h2>
           <div className="info-detail rv rv-d2">
-            <h3>Address</h3>
+            <h3>地址</h3>
             <p>{restaurant.address}</p>
           </div>
+          {restaurant.telephone && (
+            <div className="info-detail rv rv-d2">
+              <h3>電話</h3>
+              <p>
+                <a href={`tel:${restaurant.telephone.replace(/\s/g, '')}`} className="hover:text-[var(--fg)]">
+                  {restaurant.telephone}
+                </a>
+              </p>
+            </div>
+          )}
           <div className="info-detail rv rv-d2">
             <h3>{restaurant.hours.mainCourse.label}</h3>
             <p>{restaurant.hours.mainCourse.days}　{restaurant.hours.mainCourse.time}</p>
@@ -38,7 +48,7 @@ export default function ReservationSection({ restaurant }: { restaurant: Restaur
             <p>{restaurant.hours.wineBar.days}　{restaurant.hours.wineBar.time}</p>
           </div>
           <div className="info-detail rv rv-d4">
-            <h3>Closed</h3>
+            <h3>公休</h3>
             <p>{restaurant.hours.closed}</p>
           </div>
           {reserveUrl && (
