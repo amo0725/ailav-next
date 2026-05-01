@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
 import { getContent } from '@/lib/content';
+import EditorSkeleton from '@/components/admin/EditorSkeleton';
 import MenuEditor from './MenuEditor';
 
-export default async function MenuPage() {
-  const content = await getContent();
+export default function MenuPage() {
   return (
     <>
       <div className="adm-head">
@@ -13,7 +14,14 @@ export default async function MenuPage() {
           想編輯照片風格的完整菜單卡片，請到「菜單卡」頁面。
         </p>
       </div>
-      <MenuEditor initial={[...content.menu]} />
+      <Suspense fallback={<EditorSkeleton />}>
+        <MenuEditorLoader />
+      </Suspense>
     </>
   );
+}
+
+async function MenuEditorLoader() {
+  const content = await getContent();
+  return <MenuEditor key={content.version} initial={[...content.menu]} />;
 }

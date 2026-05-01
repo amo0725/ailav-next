@@ -5,6 +5,7 @@ import { updateRestaurant } from '@/app/actions/content';
 import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 
 type HoursKey = 'mainCourse' | 'tasting' | 'wineBar';
 
@@ -19,6 +20,7 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
     initial,
     async (next) => updateRestaurant(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   function patchHours(key: HoursKey, p: Partial<HoursBlock>) {
     update((v) => ({

@@ -5,6 +5,7 @@ import { updateMenu } from '@/app/actions/content';
 import Field from '@/components/admin/Field';
 import SaveBar from '@/components/admin/SaveBar';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 
 function emptyItem(): MenuItem {
   return {
@@ -21,6 +22,7 @@ export default function MenuEditor({ initial }: { initial: MenuItem[] }) {
     initial,
     async (next) => updateMenu(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   function patch(i: number, p: Partial<MenuItem>) {
     update((items) => items.map((it, idx) => (idx === i ? { ...it, ...p } : it)));

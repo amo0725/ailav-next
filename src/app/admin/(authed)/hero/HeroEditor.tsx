@@ -5,6 +5,7 @@ import { updateHero } from '@/app/actions/content';
 import SaveBar from '@/components/admin/SaveBar';
 import ImageAssetField from '@/components/admin/ImageAssetField';
 import { useEditorForm } from '@/components/admin/useEditorForm';
+import { useBeforeUnload } from '@/lib/hooks/useBeforeUnload';
 import { toAsset, type ImageAsset } from '@/lib/content/image';
 
 // Hero scatter slot aspect ratios (mirror the .gi-N CSS in globals.css).
@@ -27,6 +28,7 @@ export default function HeroEditor({ initial }: { initial: Hero }) {
     initial,
     async (next) => updateHero(next)
   );
+  useBeforeUnload(status === 'dirty');
 
   function patchScatter(i: number, p: Partial<Hero['scatterImages'][number]>) {
     update((v) => ({
