@@ -71,6 +71,9 @@ export type HoursBlock = {
   days: string;
   time: string;
   label: string;
+  /** Optional supplementary note rendered under the time line on the public
+   * reservation section (e.g. "現場排隊翻桌，不提供訂位"). Empty / missing → not rendered. */
+  note?: string;
 };
 
 export type Hours = {
@@ -78,6 +81,8 @@ export type Hours = {
   tasting: HoursBlock;
   wineBar: HoursBlock;
   closed: string;
+  /** Optional note rendered under the 公休 line. Empty / missing → not rendered. */
+  closedNote?: string;
 };
 
 export type Restaurant = {

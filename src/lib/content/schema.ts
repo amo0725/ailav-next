@@ -108,6 +108,9 @@ export const HoursBlockSchema = z.object({
   days: z.string().min(1).max(40),
   time: z.string().min(1).max(40),
   label: z.string().min(1).max(40),
+  // Optional supplementary line shown under the time on the public site.
+  // Bounded to 120 chars to keep the visual layout consistent.
+  note: z.string().max(120).optional(),
 });
 
 export const HoursSchema = z.object({
@@ -115,6 +118,7 @@ export const HoursSchema = z.object({
   tasting: HoursBlockSchema,
   wineBar: HoursBlockSchema,
   closed: z.string().min(1).max(40),
+  closedNote: z.string().max(120).optional(),
 });
 
 export const RestaurantSchema = z.object({
