@@ -1,6 +1,26 @@
-import type { Restaurant } from '@/lib/content/types';
+import type { HoursBlock, Restaurant } from '@/lib/content/types';
 import { isAllowedMapUrl } from '@/lib/content/map-url';
 import { safeReservationUrl } from '@/lib/content/reservation-url';
+
+interface HoursDetailProps {
+  block: HoursBlock;
+  /** Animation-delay utility class — `rv-d2` / `rv-d3` / `rv-d4`. */
+  delayClass: string;
+}
+
+function HoursDetail({ block, delayClass }: HoursDetailProps) {
+  return (
+    <div className={`info-detail rv ${delayClass}`}>
+      <h3>{block.label}</h3>
+      <p>
+        {block.days}　{block.time}
+      </p>
+      {block.note && (
+        <p className="text-[var(--fg3)] text-[.8rem] mt-1">{block.note}</p>
+      )}
+    </div>
+  );
+}
 
 export default function ReservationSection({ restaurant }: { restaurant: Restaurant }) {
   const mapSrc = isAllowedMapUrl(restaurant.mapEmbedUrl) ? restaurant.mapEmbedUrl : '';
@@ -34,22 +54,17 @@ export default function ReservationSection({ restaurant }: { restaurant: Restaur
               </p>
             </div>
           )}
-          <div className="info-detail rv rv-d2">
-            <h3>{restaurant.hours.mainCourse.label}</h3>
-            <p>{restaurant.hours.mainCourse.days}　{restaurant.hours.mainCourse.time}</p>
-            <p className="text-[var(--fg3)] text-[.8rem] mt-1">現場排隊翻桌，不提供訂位</p>
-          </div>
-          <div className="info-detail rv rv-d3">
-            <h3>{restaurant.hours.tasting.label}</h3>
-            <p>{restaurant.hours.tasting.days}　{restaurant.hours.tasting.time}</p>
-          </div>
-          <div className="info-detail rv rv-d3">
-            <h3>{restaurant.hours.wineBar.label}</h3>
-            <p>{restaurant.hours.wineBar.days}　{restaurant.hours.wineBar.time}</p>
-          </div>
+          <HoursDetail block={restaurant.hours.mainCourse} delayClass="rv-d2" />
+          <HoursDetail block={restaurant.hours.tasting} delayClass="rv-d3" />
+          <HoursDetail block={restaurant.hours.wineBar} delayClass="rv-d3" />
           <div className="info-detail rv rv-d4">
             <h3>公休</h3>
             <p>{restaurant.hours.closed}</p>
+            {restaurant.hours.closedNote && (
+              <p className="text-[var(--fg3)] text-[.8rem] mt-1">
+                {restaurant.hours.closedNote}
+              </p>
+            )}
           </div>
           {reserveUrl && (
             <a

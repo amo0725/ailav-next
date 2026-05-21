@@ -245,7 +245,12 @@ export const SEED_CONTENT: Content = {
     lat: 22.639763,
     lng: 120.340723,
     hours: {
-      mainCourse: { days: '週五、週六', time: '18:30 – 01:00', label: '主食套餐之夜' },
+      mainCourse: {
+        days: '週五、週六',
+        time: '18:30 – 01:00',
+        label: '主食套餐之夜',
+        note: '現場排隊翻桌，不提供訂位',
+      },
       tasting: { days: '週日、週一、週二', time: '18:30 – 21:00', label: '品味套餐之夜' },
       wineBar: { days: '週日、週一、週二', time: '21:30 – 01:00', label: '深夜 Wine Bar' },
       closed: '週三、週四公休',

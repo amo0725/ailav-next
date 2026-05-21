@@ -112,6 +112,17 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
               onChange={(e) => patchHours(key, { time: e.target.value })}
             />
           </Field>
+          <Field
+            label="備註"
+            hint="顯示於時段下方的補充說明，如「現場排隊翻桌，不提供訂位」。留空則不顯示。"
+          >
+            <input
+              type="text"
+              maxLength={120}
+              value={value.hours[key].note ?? ''}
+              onChange={(e) => patchHours(key, { note: e.target.value })}
+            />
+          </Field>
         </div>
       ))}
 
@@ -124,6 +135,19 @@ export default function ReservationEditor({ initial }: { initial: Restaurant }) 
             type="text"
             value={value.hours.closed}
             onChange={(e) => update((v) => ({ ...v, hours: { ...v.hours, closed: e.target.value } }))}
+          />
+        </Field>
+        <Field
+          label="公休備註"
+          hint="顯示於公休日下方的補充說明。留空則不顯示。"
+        >
+          <input
+            type="text"
+            maxLength={120}
+            value={value.hours.closedNote ?? ''}
+            onChange={(e) =>
+              update((v) => ({ ...v, hours: { ...v.hours, closedNote: e.target.value } }))
+            }
           />
         </Field>
       </div>
