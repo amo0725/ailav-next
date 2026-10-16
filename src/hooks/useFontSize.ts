@@ -18,6 +18,8 @@ export function useFontSize(): UseFontSizeReturn {
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as FontSize | null;
     const idx = saved ? SIZES.indexOf(saved) : 0;
+    // Hydrate from localStorage after mount (not available during SSR).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (idx >= 0) setIndex(idx);
   }, []);
 

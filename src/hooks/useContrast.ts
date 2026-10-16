@@ -13,6 +13,8 @@ export function useContrast(): UseContrastReturn {
   const [high, setHigh] = useState(false);
 
   useEffect(() => {
+    // Hydrate from localStorage after mount (not available during SSR).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHigh(localStorage.getItem(STORAGE_KEY) === '1');
   }, []);
 

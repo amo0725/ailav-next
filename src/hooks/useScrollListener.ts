@@ -25,6 +25,8 @@ function onScroll() {
  */
 export function useScrollListener(callback: ScrollCallback) {
   const cbRef = useRef(callback);
+  // "Latest callback" ref: the shared listener always calls the newest closure.
+  // eslint-disable-next-line react-hooks/refs
   cbRef.current = callback;
 
   useEffect(() => {
